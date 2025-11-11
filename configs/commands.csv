@@ -1,0 +1,14 @@
+command,shortcut,function,description,args_required
+help,--help,showHelp,Show help information,false
+forest,-f,runForest,Run forest simulation,false
+agents,-a,showAgents,Generate agent report,false
+metrics,-m,showMetrics,Show convergence metrics,false
+test,-t,runTests,Test all modules,false
+docs,-d,runDocs,Documentation tools,false
+cfg,-c,runConfig,Configuration manager,false
+log,-l,runLog,Logging system,false
+calc,--calc,runCalc,Calculator test,false
+exp,-e,runExport,Export utilities,false
+viz,-v,runViz,Visualizations,false
+gen,-g,runGen,Code generator,false
+api,--api,startApi,Start API server,false

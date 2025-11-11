@@ -1,0 +1,9 @@
+name,kappa,psi,omega,resources,description
+golden,0.618034,1.0,think,100,Perfect golden ratio agent
+explorer,0.5,1.5,dream,80,High creativity explorer
+optimizer,0.65,0.8,focus,120,Efficiency focused agent
+creator,0.6,2.0,create,90,High creativity agent
+stabilizer,0.618,0.5,stabilize,150,Stability focused agent
+balanced,0.6,1.0,think,100,Balanced general agent
+rapid,0.55,1.2,dream,70,Fast growing agent
+conservative,0.63,0.9,focus,130,Conservative growth agent

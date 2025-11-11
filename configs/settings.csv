@@ -1,0 +1,16 @@
+key,value,type,description
+debug,false,boolean,Enable debug logging
+verbose,false,boolean,Verbose output mode
+timeout,30000,number,Operation timeout in ms
+max_population,100,number,Maximum forest population
+min_population,1,number,Minimum forest population
+cycles_per_evolution,3,number,Cycles between evolution events
+mutation_rate,0.05,number,Mutation probability (0-1)
+selection_rate,0.7,number,Percentage to keep during evolution
+pollination_frequency,3,number,Cycles between pollination
+root_connection_frequency,5,number,Cycles between root connections
+kappa_convergence_threshold,0.02,number,Convergence detection threshold
+api_port,3618,number,Default API server port
+auto_start,true,boolean,Auto-start simulation on load
+update_interval,500,number,Dashboard update interval (ms)
+log_retention,50,number,Number of log entries to keep

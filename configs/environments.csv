@@ -1,0 +1,6 @@
+environment,api_port,debug,verbose,max_population,cycles_per_evolution
+development,3618,true,true,50,3
+staging,3619,false,false,100,3
+production,3620,false,false,200,5
+testing,3621,true,true,20,2
+demo,3618,false,false,30,3
