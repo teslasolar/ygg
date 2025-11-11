@@ -3,479 +3,484 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌳 Project Yggdrasil - Agentic WorldTree System</title>
+    <title>🌳 Yggdrasil DDI - Autonomous Dashboard</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', 'Courier New', monospace;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #0a1f0a 0%, #1a3a1a 50%, #0f2a0f 100%);
             color: #88ff88;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Animated background */
-        .bg-pattern {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.1;
-            background-image:
-                radial-gradient(circle at 20% 50%, #44ff44 2px, transparent 2px),
-                radial-gradient(circle at 80% 50%, #ffaa00 2px, transparent 2px);
-            background-size: 100px 100px;
-            animation: drift 20s linear infinite;
-            z-index: 0;
-        }
-
-        @keyframes drift {
-            from { transform: translateY(0); }
-            to { transform: translateY(100px); }
-        }
-
-        .container {
-            max-width: 1200px;
-            width: 90%;
-            position: relative;
-            z-index: 10;
+            overflow-x: hidden;
         }
 
         .header {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
             text-align: center;
-            margin-bottom: 60px;
-            animation: fadeIn 1s ease;
+            border-bottom: 2px solid #44ff44;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .logo {
-            font-size: 120px;
-            text-shadow: 0 0 40px #44ff44;
-            animation: pulse 3s infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-        }
-
-        h1 {
-            font-size: 3.5em;
-            background: linear-gradient(45deg, #44ff44, #88ff88, #ffff00, #44ff44);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradient-shift 5s ease infinite;
-            margin-bottom: 15px;
-        }
-
-        @keyframes gradient-shift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .subtitle {
-            font-size: 1.3em;
-            color: #66cc66;
+        .header h1 {
+            font-size: 2.5em;
             margin-bottom: 10px;
+            text-shadow: 0 0 20px #44ff44;
         }
 
-        .version {
-            font-size: 0.9em;
+        .phi-display {
+            font-size: 1.2em;
             color: #ffff00;
-            font-family: 'Courier New', monospace;
+            font-family: monospace;
         }
 
-        .description {
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto 50px;
-            line-height: 1.8;
-            color: #aaffaa;
-            animation: fadeIn 1.5s ease;
-        }
-
-        .cards-grid {
+        .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-            animation: fadeIn 2s ease;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
         }
 
-        .card {
-            background: rgba(0, 40, 0, 0.8);
+        .panel {
+            background: rgba(0,0,0,0.7);
             border: 2px solid #44ff44;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(68,255,68,0.3);
+        }
+
+        .panel h2 {
+            color: #ffff00;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 1px solid #44ff44;
+            padding-bottom: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            margin: 5px;
+        }
+
+        .status-running { background: #28a745; color: white; }
+        .status-ready { background: #17a2b8; color: white; }
+        .status-loading { background: #ffc107; color: black; }
+
+        #forestCanvas {
+            width: 100%;
+            height: 300px;
+            background: #000;
+            border: 1px solid #44ff44;
+            border-radius: 5px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(68,255,68,0.1);
+            border-radius: 5px;
+        }
+
+        .metric-label { color: #88ff88; }
+        .metric-value {
+            color: #ffff00;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .chart {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            border: 1px solid #44ff44;
+            border-radius: 5px;
             position: relative;
             overflow: hidden;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(68, 255, 68, 0.2), transparent);
-            transition: left 0.5s;
+        .module-list {
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .card:hover::before {
-            left: 100%;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 40px rgba(68, 255, 68, 0.4);
-            border-color: #88ff88;
-        }
-
-        .card-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 10px #44ff44);
-        }
-
-        .card-title {
-            font-size: 1.5em;
-            color: #44ff44;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .card-description {
-            color: #88ff88;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .card-button {
-            display: inline-block;
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #44ff44, #22cc22);
-            color: #000;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .card-button:hover {
-            background: linear-gradient(135deg, #66ff66, #44ee44);
-            box-shadow: 0 5px 20px rgba(68, 255, 68, 0.5);
-            transform: scale(1.05);
-        }
-
-        .features {
-            background: rgba(0, 20, 0, 0.8);
-            border: 2px solid rgba(68, 255, 68, 0.3);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 40px;
-            animation: fadeIn 2.5s ease;
-        }
-
-        .features h2 {
-            color: #44ff44;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-
-        .features-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
+        .module-item {
             padding: 10px;
-            background: rgba(68, 255, 68, 0.05);
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-
-        .feature-item:hover {
-            background: rgba(68, 255, 68, 0.15);
-            transform: translateX(5px);
-        }
-
-        .feature-icon {
-            font-size: 24px;
-            margin-right: 10px;
-        }
-
-        .footer {
-            text-align: center;
-            color: #666;
+            margin: 5px 0;
+            background: rgba(68,255,68,0.1);
+            border-left: 3px solid #44ff44;
+            border-radius: 3px;
+            font-family: monospace;
             font-size: 0.9em;
-            animation: fadeIn 3s ease;
         }
 
-        .footer a {
-            color: #44ff44;
-            text-decoration: none;
+        .log-console {
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            font-size: 0.85em;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #44ff44;
+            border-radius: 5px;
         }
 
-        .footer a:hover {
-            text-decoration: underline;
+        .log-entry {
+            padding: 2px 0;
         }
 
-        .math-display {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid #ffaa00;
+        .log-success { color: #0f0; }
+        .log-error { color: #f00; }
+        .log-info { color: #0ff; }
+        .log-warn { color: #ff0; }
+
+        .convergence-indicator {
+            width: 100%;
+            height: 20px;
+            background: #333;
             border-radius: 10px;
-            padding: 20px;
-            margin: 30px auto;
-            max-width: 600px;
-            text-align: center;
-            font-family: 'Courier New', monospace;
-            color: #ffff00;
-        }
-
-        .math-display .formula {
-            font-size: 1.2em;
+            overflow: hidden;
             margin: 10px 0;
         }
 
+        .convergence-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #f00, #ff0, #0f0);
+            transition: width 0.5s;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
-            }
-
-            .logo {
-                font-size: 80px;
-            }
-
-            .cards-grid {
+            .dashboard {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="bg-pattern"></div>
-
-    <div class="container">
-        <div class="header">
-            <div class="logo">🌳</div>
-            <h1>PROJECT YGGDRASIL</h1>
-            <div class="subtitle">Agentic WorldTree Seed Repository</div>
-            <div class="version">v2.0.0 | κ=1/φ</div>
+    <div class="header">
+        <h1>🌳 PROJECT YGGDRASIL</h1>
+        <div class="phi-display">
+            φ = 1.618034 | 1/φ = 0.618034 | Document Driven Interface v2.0.0
         </div>
-
-        <div class="description">
-            <p>
-                A self-organizing multi-agent ecosystem that naturally converges to the <strong>golden ratio</strong> (φ⁻¹ ≈ 0.618034)
-                through entropy optimization. Agents grow, branch, produce fruits, and communicate through mycorrhizal networks,
-                all encoded in just <strong>50 bytes of DNA</strong>.
-            </p>
-        </div>
-
-        <div class="math-display">
-            <div class="formula">φ = (1 + √5) / 2 ≈ 1.618033988749895</div>
-            <div class="formula">1/φ ≈ 0.6180339887498949</div>
-            <div>κ = 1/φ (Entropy Sweet Spot)</div>
-        </div>
-
-        <div class="cards-grid">
-            <div class="card" onclick="location.href='forest.html'">
-                <div class="card-icon">🌲</div>
-                <div class="card-title">Forest Visualization</div>
-                <div class="card-description">
-                    Interactive 3D forest with real-time growth simulation. Watch agents converge to κ=1/φ
-                    through natural selection and entropy dynamics.
-                </div>
-                <a href="forest.html" class="card-button">Enter Forest</a>
-            </div>
-
-            <div class="card" onclick="location.href='agents.html'">
-                <div class="card-icon">🤖</div>
-                <div class="card-title">Agent Inspector</div>
-                <div class="card-description">
-                    Browse individual agents, inspect consciousness functions, view entropy metrics,
-                    and examine branch/fruit genealogy.
-                </div>
-                <a href="agents.html" class="card-button">Inspect Agents</a>
-            </div>
-
-            <div class="card" onclick="location.href='metrics.html'">
-                <div class="card-icon">📊</div>
-                <div class="card-title">Metrics Dashboard</div>
-                <div class="card-description">
-                    Real-time convergence charts, distribution histograms, entropy heatmaps,
-                    and detailed statistical analysis.
-                </div>
-                <a href="metrics.html" class="card-button">View Metrics</a>
-            </div>
-        </div>
-
-        <div class="features">
-            <h2>✨ Key Features</h2>
-            <div class="features-list">
-                <div class="feature-item">
-                    <div class="feature-icon">🧬</div>
-                    <div>50-byte DNA encoding</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🌱</div>
-                    <div>Self-organizing agents</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">📐</div>
-                    <div>Golden ratio convergence</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🔄</div>
-                    <div>Natural selection</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🧠</div>
-                    <div>Consciousness functions</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🍎</div>
-                    <div>Fruiting & branching</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🌐</div>
-                    <div>Mycorrhizal networks</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">💫</div>
-                    <div>Fibonacci spirals</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">⚡</div>
-                    <div>Cross-pollination</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">📊</div>
-                    <div>Real-time metrics</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🎨</div>
-                    <div>3D visualization</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🔬</div>
-                    <div>Genetic algorithms</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>
-                <strong>Project Yggdrasil</strong> - A forest of minds, grown from seeds of thought
-            </p>
-            <p style="margin-top: 10px;">
-                © 2024 Konomi Systems. WITH PREJUDICE. | AS IS. |
-                <a href="https://github.com/teslasolar/ygg">GitHub</a>
-            </p>
+        <div style="margin-top: 10px;">
+            <span class="status-badge status-loading" id="systemStatus">Initializing...</span>
         </div>
     </div>
 
-    <script src="state-machine.js"></script>
+    <div class="dashboard">
+        <!-- Forest Simulation Panel -->
+        <div class="panel">
+            <h2>🌲 Forest Simulation</h2>
+            <canvas id="forestCanvas"></canvas>
+            <div style="margin-top: 15px;">
+                <div class="metric-row">
+                    <span class="metric-label">Season:</span>
+                    <span class="metric-value" id="season">0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Population:</span>
+                    <span class="metric-value" id="population">0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Avg κ:</span>
+                    <span class="metric-value" id="avgKappa">0.000000</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Convergence Metrics Panel -->
+        <div class="panel">
+            <h2>📊 Convergence Metrics</h2>
+            <div class="metric-row">
+                <span class="metric-label">Target (1/φ):</span>
+                <span class="metric-value">0.618034</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Current Mean:</span>
+                <span class="metric-value" id="meanKappa">0.000000</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Std Deviation:</span>
+                <span class="metric-value" id="stdDev">0.000000</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Near Target:</span>
+                <span class="metric-value" id="nearTarget">0 (0%)</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Converged:</span>
+                <span class="metric-value" id="converged">❌ No</span>
+            </div>
+
+            <h3 style="margin-top: 20px; color: #88ff88;">Convergence Progress</h3>
+            <div class="convergence-indicator">
+                <div class="convergence-bar" id="convergenceBar" style="width: 0%"></div>
+            </div>
+
+            <div class="chart" id="convergenceChart"></div>
+        </div>
+
+        <!-- Module Registry Panel -->
+        <div class="panel">
+            <h2>📚 Module Registry</h2>
+            <div class="module-list" id="moduleList">
+                <div class="module-item">Loading modules...</div>
+            </div>
+        </div>
+
+        <!-- Live Console Panel -->
+        <div class="panel">
+            <h2>📋 Live Console</h2>
+            <div class="log-console" id="logConsole">
+                <div class="log-entry log-info">[INIT] Yggdrasil DDI starting...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load markdown loader -->
+    <script src="md-loader.md"></script>
+    <script src="sm.md"></script>
+
     <script>
-        // Create state machine for index page
-        const sm = createStateMachine('Index');
+        const PHI = (1 + Math.sqrt(5)) / 2;
+        const INV_PHI = 1 / PHI;
 
-        // Check if running on GitHub Pages
-        sm.log('info', `Running on: ${sm.isGitHubPages ? 'GitHub Pages' : 'Local Server'}`);
-        sm.log('info', `Protocol: ${window.location.protocol}`);
-        sm.log('info', `Hostname: ${window.location.hostname}`);
+        let forest, calc, sm;
+        let kappaHistory = [];
+        let animationId;
 
-        // Validate all page links
-        const links = ['forest.html', 'agents.html', 'metrics.html', 'worldtree.js', 'state-machine.js'];
-        sm.log('info', 'Checking page resources...');
+        // Logging
+        function log(level, msg) {
+            const console = document.getElementById('logConsole');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${level}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            console.appendChild(entry);
+            console.scrollTop = console.scrollHeight;
 
-        links.forEach(link => {
-            fetch(link, { method: 'HEAD' })
-                .then(response => {
-                    if (response.ok) {
-                        sm.log('success', `✅ ${link} available`);
-                    } else {
-                        sm.log('warning', `⚠️ ${link} returned ${response.status}`);
-                    }
-                })
-                .catch(error => {
-                    sm.log('error', `❌ ${link} failed to load`, error.message);
-                });
-        });
-
-        // GitHub Pages compatibility check
-        const issues = sm.checkGitHubPagesCompatibility();
-        if (issues.length === 0) {
-            sm.log('success', '✅ All GitHub Pages compatibility checks passed!');
+            // Keep last 50 entries
+            while (console.children.length > 50) {
+                console.removeChild(console.firstChild);
+            }
         }
 
-        sm.transition('READY');
+        // Update system status
+        function updateStatus(status, text) {
+            const badge = document.getElementById('systemStatus');
+            badge.className = `status-badge status-${status}`;
+            badge.textContent = text;
+        }
 
-        // Animate feature items on scroll (for mobile)
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
+        // Draw 2D forest
+        function drawForest() {
+            const canvas = document.getElementById('forestCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            ctx.fillStyle = '#0a1f0a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            forest.trees.forEach((tree, index) => {
+                const angle = index * 2.39996322972865332; // Golden angle
+                const radius = Math.sqrt(index) * 20;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                // Draw tree trunk
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(x - 2, y, 4, 15 + tree.age / 2);
+
+                // Draw foliage (color based on κ distance from 1/φ)
+                const distance = Math.abs(tree.κ - INV_PHI);
+                const hue = 120 - distance * 200;
+                ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
+                ctx.beginPath();
+                ctx.arc(x, y - 8, 5 + tree.ψ * 2, 0, Math.PI * 2);
+                ctx.fill();
             });
-        });
+        }
 
-        document.querySelectorAll('.feature-item').forEach(item => {
-            item.style.opacity = '0';
-            item.style.transform = 'translateY(20px)';
-            item.style.transition = 'all 0.5s ease';
-            observer.observe(item);
-        });
+        // Draw convergence chart
+        function drawChart() {
+            const canvas = document.getElementById('convergenceChart');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
 
-        // Add keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === '1') location.href = 'forest.html';
-            if (e.key === '2') location.href = 'agents.html';
-            if (e.key === '3') location.href = 'metrics.html';
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Debug shortcuts
-            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
-                console.log('📊 State Machine Status:');
-                console.log(sm.getMetrics());
-                console.log('All State Machines:', window.YggStateMachines);
+            if (kappaHistory.length < 2) return;
+
+            const max = Math.max(...kappaHistory, INV_PHI + 0.1);
+            const min = Math.min(...kappaHistory, INV_PHI - 0.1);
+            const range = max - min || 1;
+
+            // Draw target line
+            const targetY = canvas.height - ((INV_PHI - min) / range * canvas.height);
+            ctx.strokeStyle = '#f00';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(0, targetY);
+            ctx.lineTo(canvas.width, targetY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw kappa line
+            ctx.strokeStyle = '#0f0';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            kappaHistory.forEach((val, i) => {
+                const x = (i / (kappaHistory.length - 1)) * canvas.width;
+                const y = canvas.height - ((val - min) / range * canvas.height);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+
+            ctx.stroke();
+        }
+
+        // Update metrics display
+        function updateMetrics() {
+            const kappas = forest.trees.map(t => t.κ);
+            const mean = kappas.reduce((s, k) => s + k, 0) / kappas.length;
+
+            // Calculate std dev
+            const variance = kappas.reduce((s, k) => s + Math.pow(k - mean, 2), 0) / kappas.length;
+            const stdDev = Math.sqrt(variance);
+
+            const near = kappas.filter(k => Math.abs(k - INV_PHI) < 0.05).length;
+            const converged = stdDev < 0.02 && Math.abs(mean - INV_PHI) < 0.02;
+
+            document.getElementById('season').textContent = forest.season;
+            document.getElementById('population').textContent = forest.trees.length;
+            document.getElementById('avgKappa').textContent = mean.toFixed(6);
+            document.getElementById('meanKappa').textContent = mean.toFixed(6);
+            document.getElementById('stdDev').textContent = stdDev.toFixed(6);
+            document.getElementById('nearTarget').textContent = `${near} (${(near/forest.trees.length*100).toFixed(1)}%)`;
+            document.getElementById('converged').textContent = converged ? '✅ Yes' : '❌ No';
+
+            // Update convergence bar
+            const accuracy = Math.max(0, 100 - (Math.abs(mean - INV_PHI) / INV_PHI * 100));
+            document.getElementById('convergenceBar').style.width = accuracy + '%';
+
+            kappaHistory.push(mean);
+            if (kappaHistory.length > 100) kappaHistory.shift();
+        }
+
+        // Animation loop
+        function animate() {
+            if (forest) {
+                forest.cycle();
+                updateMetrics();
+                drawForest();
+                drawChart();
+
+                if (forest.season % 10 === 0) {
+                    log('success', `Season ${forest.season}: Population ${forest.trees.length}, Avg κ = ${(forest.trees.reduce((s,t)=>s+t.κ,0)/forest.trees.length).toFixed(3)}`);
+                }
             }
-        });
 
-        console.log('🌳 Project Yggdrasil v2.0.0');
-        console.log('φ = ' + ((1 + Math.sqrt(5)) / 2));
-        console.log('1/φ = ' + (1 / ((1 + Math.sqrt(5)) / 2)));
-        console.log('');
-        console.log('🎮 Keyboard Shortcuts:');
-        console.log('  1, 2, 3 - Navigate to pages');
-        console.log('  Ctrl+Shift+E - View errors');
-        console.log('  Ctrl+Shift+L - Export logs');
-        console.log('  Ctrl+Shift+D - Debug state');
+            animationId = setTimeout(animate, 500);
+        }
+
+        // Initialize system
+        async function init() {
+            try {
+                log('info', 'Loading state machine...');
+                sm = createStateMachine('Dashboard');
+
+                log('info', 'Loading markdown modules...');
+                const loader = new MarkdownLoader();
+
+                const WorldTree = await loader.load('wt.md');
+                log('success', '✅ WorldTree loaded');
+
+                const AgentTree = await loader.load('ag.md');
+                log('success', '✅ AgentTree loaded');
+
+                const Forest = await loader.load('fr.md');
+                log('success', '✅ Forest loaded');
+
+                calc = await loader.load('calc.md');
+                log('success', '✅ Calculator loaded');
+
+                // Create forest
+                forest = new Forest();
+                log('success', '🌳 Forest initialized');
+
+                // Initial growth
+                for (let i = 0; i < 5; i++) {
+                    forest.cycle();
+                }
+                log('info', `Initial growth complete: ${forest.trees.length} trees`);
+
+                // Load module list
+                await loadModuleList();
+
+                updateStatus('running', '🟢 Running');
+                log('success', '🎉 System fully operational!');
+
+                // Start animation
+                animate();
+
+            } catch (e) {
+                log('error', `❌ Error: ${e.message}`);
+                console.error(e);
+                updateStatus('error', '🔴 Error');
+            }
+        }
+
+        // Load module list
+        async function loadModuleList() {
+            const modules = [
+                { name: 'wt.md', desc: 'WorldTree Core' },
+                { name: 'ag.md', desc: 'AgentTree Class' },
+                { name: 'fr.md', desc: 'Forest Ecosystem' },
+                { name: 'sm.md', desc: 'State Machine' },
+                { name: 'run.md', desc: 'Main Runner' },
+                { name: 'md-loader.md', desc: 'Markdown Loader' },
+                { name: 'docs.md', desc: 'Documentation' },
+                { name: 'test.md', desc: 'Test Runner' },
+                { name: 'cfg.md', desc: 'Configuration' },
+                { name: 'log.md', desc: 'Logging System' },
+                { name: 'calc.md', desc: 'Calculator' },
+                { name: 'exp.md', desc: 'Export Utilities' },
+                { name: 'viz.md', desc: 'Visualizations' },
+                { name: 'gen.md', desc: 'Code Generator' },
+                { name: 'api.md', desc: 'REST API Server' }
+            ];
+
+            const list = document.getElementById('moduleList');
+            list.innerHTML = '';
+
+            modules.forEach(mod => {
+                const item = document.createElement('div');
+                item.className = 'module-item';
+                item.innerHTML = `<strong>${mod.name}</strong> - ${mod.desc}`;
+                list.appendChild(item);
+            });
+
+            log('info', `Loaded ${modules.length} modules`);
+        }
+
+        // Start on page load
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>

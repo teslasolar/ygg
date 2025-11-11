@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌳 Project Yggdrasil - Agentic WorldTree System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a1f0a 0%, #1a3a1a 50%, #0f2a0f 100%);
+            color: #88ff88;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image:
+                radial-gradient(circle at 20% 50%, #44ff44 2px, transparent 2px),
+                radial-gradient(circle at 80% 50%, #ffaa00 2px, transparent 2px);
+            background-size: 100px 100px;
+            animation: drift 20s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes drift {
+            from { transform: translateY(0); }
+            to { transform: translateY(100px); }
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 90%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-size: 120px;
+            text-shadow: 0 0 40px #44ff44;
+            animation: pulse 3s infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            background: linear-gradient(45deg, #44ff44, #88ff88, #ffff00, #44ff44);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-shift 5s ease infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: #66cc66;
+            margin-bottom: 10px;
+        }
+
+        .version {
+            font-size: 0.9em;
+            color: #ffff00;
+            font-family: 'Courier New', monospace;
+        }
+
+        .description {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 50px;
+            line-height: 1.8;
+            color: #aaffaa;
+            animation: fadeIn 1.5s ease;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+            animation: fadeIn 2s ease;
+        }
+
+        .card {
+            background: rgba(0, 40, 0, 0.8);
+            border: 2px solid #44ff44;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(68, 255, 68, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 40px rgba(68, 255, 68, 0.4);
+            border-color: #88ff88;
+        }
+
+        .card-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px #44ff44);
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            color: #44ff44;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .card-description {
+            color: #88ff88;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .card-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #44ff44, #22cc22);
+            color: #000;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .card-button:hover {
+            background: linear-gradient(135deg, #66ff66, #44ee44);
+            box-shadow: 0 5px 20px rgba(68, 255, 68, 0.5);
+            transform: scale(1.05);
+        }
+
+        .features {
+            background: rgba(0, 20, 0, 0.8);
+            border: 2px solid rgba(68, 255, 68, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            animation: fadeIn 2.5s ease;
+        }
+
+        .features h2 {
+            color: #44ff44;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(68, 255, 68, 0.05);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .feature-item:hover {
+            background: rgba(68, 255, 68, 0.15);
+            transform: translateX(5px);
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            animation: fadeIn 3s ease;
+        }
+
+        .footer a {
+            color: #44ff44;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .math-display {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #ffaa00;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px auto;
+            max-width: 600px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #ffff00;
+        }
+
+        .math-display .formula {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .logo {
+                font-size: 80px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">🌳</div>
+            <h1>PROJECT YGGDRASIL</h1>
+            <div class="subtitle">Agentic WorldTree Seed Repository</div>
+            <div class="version">v2.0.0 | κ=1/φ</div>
+        </div>
+
+        <div class="description">
+            <p>
+                A self-organizing multi-agent ecosystem that naturally converges to the <strong>golden ratio</strong> (φ⁻¹ ≈ 0.618034)
+                through entropy optimization. Agents grow, branch, produce fruits, and communicate through mycorrhizal networks,
+                all encoded in just <strong>50 bytes of DNA</strong>.
+            </p>
+        </div>
+
+        <div class="math-display">
+            <div class="formula">φ = (1 + √5) / 2 ≈ 1.618033988749895</div>
+            <div class="formula">1/φ ≈ 0.6180339887498949</div>
+            <div>κ = 1/φ (Entropy Sweet Spot)</div>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card" onclick="location.href='forest.html'">
+                <div class="card-icon">🌲</div>
+                <div class="card-title">Forest Visualization</div>
+                <div class="card-description">
+                    Interactive 3D forest with real-time growth simulation. Watch agents converge to κ=1/φ
+                    through natural selection and entropy dynamics.
+                </div>
+                <a href="forest.html" class="card-button">Enter Forest</a>
+            </div>
+
+            <div class="card" onclick="location.href='agents.html'">
+                <div class="card-icon">🤖</div>
+                <div class="card-title">Agent Inspector</div>
+                <div class="card-description">
+                    Browse individual agents, inspect consciousness functions, view entropy metrics,
+                    and examine branch/fruit genealogy.
+                </div>
+                <a href="agents.html" class="card-button">Inspect Agents</a>
+            </div>
+
+            <div class="card" onclick="location.href='metrics.html'">
+                <div class="card-icon">📊</div>
+                <div class="card-title">Metrics Dashboard</div>
+                <div class="card-description">
+                    Real-time convergence charts, distribution histograms, entropy heatmaps,
+                    and detailed statistical analysis.
+                </div>
+                <a href="metrics.html" class="card-button">View Metrics</a>
+            </div>
+        </div>
+
+        <div class="features">
+            <h2>✨ Key Features</h2>
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="feature-icon">🧬</div>
+                    <div>50-byte DNA encoding</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🌱</div>
+                    <div>Self-organizing agents</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📐</div>
+                    <div>Golden ratio convergence</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔄</div>
+                    <div>Natural selection</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🧠</div>
+                    <div>Consciousness functions</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🍎</div>
+                    <div>Fruiting & branching</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🌐</div>
+                    <div>Mycorrhizal networks</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💫</div>
+                    <div>Fibonacci spirals</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <div>Cross-pollination</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <div>Real-time metrics</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🎨</div>
+                    <div>3D visualization</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔬</div>
+                    <div>Genetic algorithms</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>
+                <strong>Project Yggdrasil</strong> - A forest of minds, grown from seeds of thought
+            </p>
+            <p style="margin-top: 10px;">
+                © 2024 Konomi Systems. WITH PREJUDICE. | AS IS. |
+                <a href="https://github.com/teslasolar/ygg">GitHub</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="state-machine.js"></script>
+    <script>
+        // Create state machine for index page
+        const sm = createStateMachine('Index');
+
+        // Check if running on GitHub Pages
+        sm.log('info', `Running on: ${sm.isGitHubPages ? 'GitHub Pages' : 'Local Server'}`);
+        sm.log('info', `Protocol: ${window.location.protocol}`);
+        sm.log('info', `Hostname: ${window.location.hostname}`);
+
+        // Validate all page links
+        const links = ['forest.html', 'agents.html', 'metrics.html', 'worldtree.js', 'state-machine.js'];
+        sm.log('info', 'Checking page resources...');
+
+        links.forEach(link => {
+            fetch(link, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        sm.log('success', `✅ ${link} available`);
+                    } else {
+                        sm.log('warning', `⚠️ ${link} returned ${response.status}`);
+                    }
+                })
+                .catch(error => {
+                    sm.log('error', `❌ ${link} failed to load`, error.message);
+                });
+        });
+
+        // GitHub Pages compatibility check
+        const issues = sm.checkGitHubPagesCompatibility();
+        if (issues.length === 0) {
+            sm.log('success', '✅ All GitHub Pages compatibility checks passed!');
+        }
+
+        sm.transition('READY');
+
+        // Animate feature items on scroll (for mobile)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        document.querySelectorAll('.feature-item').forEach(item => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.transition = 'all 0.5s ease';
+            observer.observe(item);
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '1') location.href = 'forest.html';
+            if (e.key === '2') location.href = 'agents.html';
+            if (e.key === '3') location.href = 'metrics.html';
+
+            // Debug shortcuts
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                console.log('📊 State Machine Status:');
+                console.log(sm.getMetrics());
+                console.log('All State Machines:', window.YggStateMachines);
+            }
+        });
+
+        console.log('🌳 Project Yggdrasil v2.0.0');
+        console.log('φ = ' + ((1 + Math.sqrt(5)) / 2));
+        console.log('1/φ = ' + (1 / ((1 + Math.sqrt(5)) / 2)));
+        console.log('');
+        console.log('🎮 Keyboard Shortcuts:');
+        console.log('  1, 2, 3 - Navigate to pages');
+        console.log('  Ctrl+Shift+E - View errors');
+        console.log('  Ctrl+Shift+L - Export logs');
+        console.log('  Ctrl+Shift+D - Debug state');
+    </script>
+</body>
+</html>
