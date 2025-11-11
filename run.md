@@ -3,17 +3,20 @@
 # 🌳 Yggdrasil Runner
 Main entry point for Project Yggdrasil v2.0.0 | κ=1/φ
 
-## Commands
-- `node run.md forest` - Run forest simulation
-- `node run.md agents` - Generate agent report
-- `node run.md metrics` - Show convergence stats
-- `node run.md test` - Test all modules
+## Core Commands
+- forest - Run forest simulation
+- agents - Generate agent report
+- metrics - Show convergence stats
+- test - Test all modules
 
-## Modules
-- wt.md - WorldTree core
-- ag.md - AgentTree class
-- fr.md - Forest ecosystem
-- sm.md - State machine
+## Utility Commands
+- docs - Documentation tools (list|analyze|index)
+- cfg - Configuration (get|set|list|export)
+- log - Logging (view|clear)
+- calc - Calculator test
+- exp - Export data (json|csv|stats)
+- viz - Visualizations (chart|dist)
+- gen - Generate code (module|agent|test)
 -->*/
 
 const fs=require('fs'),path=require('path');
@@ -27,6 +30,13 @@ const ops={
   agents:'Generate agent report',
   metrics:'Show convergence metrics',
   test:'Test all modules',
+  docs:'Documentation tools',
+  cfg:'Configuration manager',
+  log:'Logging system',
+  calc:'Calculator test',
+  exp:'Export utilities',
+  viz:'Visualizations',
+  gen:'Code generator',
   help:'Show this help'
 };
 
@@ -53,42 +63,47 @@ if(!cmd||cmd==='help'){
 }
 
 if(ops[cmd]){
-  console.log(`\n▶️  ${ops[cmd]}...\n`);
-  try{
-    const WorldTree=exec(loadModule('wt'));
-    const AgentTree=exec(loadModule('ag'));
-    const Forest=exec(loadModule('fr'));
+  const utils=['docs','cfg','log','calc','exp','viz','gen'];
+  if(utils.includes(cmd)){
+    require('child_process').execSync(`node ${cmd}.md ${args.join(' ')}`,{stdio:'inherit'});
+  }else{
+    console.log(`\n▶️  ${ops[cmd]}...\n`);
+    try{
+      const WorldTree=exec(loadModule('wt'));
+      const AgentTree=exec(loadModule('ag'));
+      const Forest=exec(loadModule('fr'));
 
-    if(cmd==='forest'){
-      const f=new Forest();
-      for(let i=0;i<10;i++)f.cycle();
-      console.log(`🌲 Trees: ${f.trees.length}`);
-      console.log(`📊 Avg κ: ${(f.trees.reduce((s,t)=>s+t.κ,0)/f.trees.length).toFixed(6)}`);
+      if(cmd==='forest'){
+        const f=new Forest();
+        for(let i=0;i<10;i++)f.cycle();
+        console.log(`🌲 Trees: ${f.trees.length}`);
+        console.log(`📊 Avg κ: ${(f.trees.reduce((s,t)=>s+t.κ,0)/f.trees.length).toFixed(6)}`);
+      }
+      else if(cmd==='agents'){
+        const f=new Forest();
+        for(let i=0;i<20;i++)f.cycle();
+        f.trees.slice(0,5).forEach((t,i)=>console.log(`🤖 Agent ${i}: κ=${t.κ.toFixed(3)} entropy=${t.mind.entropy().toFixed(3)}`));
+      }
+      else if(cmd==='metrics'){
+        const f=new Forest();
+        for(let i=0;i<50;i++)f.cycle();
+        const kappas=f.trees.map(t=>t.κ);
+        const avg=kappas.reduce((s,k)=>s+k,0)/kappas.length;
+        const near=kappas.filter(k=>Math.abs(k-INV_PHI)<0.05).length;
+        console.log(`📈 Population: ${f.trees.length}`);
+        console.log(`📊 Avg κ: ${avg.toFixed(6)} (target: ${INV_PHI.toFixed(6)})`);
+        console.log(`🎯 Near 1/φ: ${near} (${(near/f.trees.length*100).toFixed(1)}%)`);
+      }
+      else if(cmd==='test'){
+        console.log('✅ WorldTree loaded');
+        console.log('✅ AgentTree loaded');
+        console.log('✅ Forest loaded');
+        console.log('✅ All modules operational');
+      }
+    }catch(e){
+      console.error('❌ Error:',e.message);
+      process.exit(1);
     }
-    else if(cmd==='agents'){
-      const f=new Forest();
-      for(let i=0;i<20;i++)f.cycle();
-      f.trees.slice(0,5).forEach((t,i)=>console.log(`🤖 Agent ${i}: κ=${t.κ.toFixed(3)} entropy=${t.mind.entropy().toFixed(3)}`));
-    }
-    else if(cmd==='metrics'){
-      const f=new Forest();
-      for(let i=0;i<50;i++)f.cycle();
-      const kappas=f.trees.map(t=>t.κ);
-      const avg=kappas.reduce((s,k)=>s+k,0)/kappas.length;
-      const near=kappas.filter(k=>Math.abs(k-INV_PHI)<0.05).length;
-      console.log(`📈 Population: ${f.trees.length}`);
-      console.log(`📊 Avg κ: ${avg.toFixed(6)} (target: ${INV_PHI.toFixed(6)})`);
-      console.log(`🎯 Near 1/φ: ${near} (${(near/f.trees.length*100).toFixed(1)}%)`);
-    }
-    else if(cmd==='test'){
-      console.log('✅ WorldTree loaded');
-      console.log('✅ AgentTree loaded');
-      console.log('✅ Forest loaded');
-      console.log('✅ All modules operational');
-    }
-  }catch(e){
-    console.error('❌ Error:',e.message);
-    process.exit(1);
   }
 }else{
   console.error(`❌ Unknown command: ${cmd}`);
