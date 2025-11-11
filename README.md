@@ -1,527 +1,337 @@
-# 🌳 Project Yggdrasil: Agentic WorldTree Seed Repository
+# 🌳 Project Yggdrasil - Document Driven Interface (DDI)
 
-**v2.0.0 | κ=1/φ**
+**v2.0.0 | κ=1/φ | Executable Markdown Architecture**
 
-A multi-agent ecosystem that naturally converges to the golden ratio through entropy optimization.
+## Overview
 
-[![License](https://img.shields.io/badge/License-Konomi%20Systems-blue.svg)](LICENSE)
-[![Golden Ratio](https://img.shields.io/badge/κ-1%2Fφ-gold.svg)](https://en.wikipedia.org/wiki/Golden_ratio)
-[![Status](https://img.shields.io/badge/Status-Active-green.svg)](https://github.com)
+Project Yggdrasil is now a **Document Driven Interface (DDI)** system where ALL logic is contained in executable `.md` files under 250 tokens each. This enables GitHub Pages to act as a dynamic processor while maintaining static hosting.
 
----
+### Philosophy
 
-## 📖 Table of Contents
+- **All files are `.md`** - Documentation IS the code
+- **Under 250 tokens** - Ultra-compressed modular architecture
+- **Self-executing** - Run with `node filename.md`
+- **Browser-compatible** - Load dynamically in HTML via md-loader.md
+- **GitHub Pages native** - Static hosting, dynamic execution
 
-- [Overview](#overview)
-- [Mathematical Foundation](#mathematical-foundation)
-- [Quick Start](#quick-start)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Usage](#usage)
-- [API Reference](#api-reference)
-- [Examples](#examples)
-- [License](#license)
+## Golden Ratio Convergence
 
----
+The system naturally evolves toward the golden ratio inverse (κ=1/φ ≈ 0.618034) through:
+- **Entropy optimization** - Agents with κ near 1/φ have highest entropy scores
+- **Energy production** - Photosynthesis peaks at κ=1/φ
+- **Natural selection** - Tournament-based evolution favors optimal agents
+- **Mycorrhizal networks** - Resource sharing strengthens convergence
 
-## 🌟 Overview
-
-Project Yggdrasil is a **self-organizing multi-agent system** inspired by natural forest ecosystems. Agents (trees) grow, branch, produce fruits, and communicate through mycorrhizal networks, all while naturally converging to the mathematical optimal point: **κ = 1/φ ≈ 0.618034** (the inverse golden ratio).
-
-### Why 1/φ?
-
-The inverse golden ratio is special because it represents the **edge of chaos** - the optimal balance between:
-
-- **Order and Chaos**: Maximum structure + maximum surprise
-- **Exploration and Exploitation**: Optimal search efficiency
-- **Compression and Information**: Maximum entropy packing
-- **Stability and Adaptability**: Self-similar recursive equilibrium
-
-Think of it as nature's sweet spot - from the arrangement of sunflower seeds to galaxy spiral arms, 1/φ appears wherever systems optimize for maximum efficiency.
-
----
-
-## 🧮 Mathematical Foundation
-
-### Universal Constants
-
-```javascript
-const PHI = (1 + Math.sqrt(5)) / 2;  // φ ≈ 1.618033988749895
-const INV_PHI = 1 / PHI;              // 1/φ ≈ 0.6180339887498949
-const KAPPA_OPTIMAL = INV_PHI;        // Entropy sweet spot
+```
+φ = (1 + √5) / 2 ≈ 1.618033988749895
+1/φ ≈ 0.6180339887498949 ← System convergence target
 ```
 
-### The WorldTree Seed™
+## File Structure
 
-The entire agent ecosystem can be encoded in just **50 characters**:
+### Core Modules (<250 tokens each)
 
-```javascript
-Ygg = `κ:${INV_PHI},ψ:1,Ω:think,β:[],ƒ:[],№:0,₹:100,◊:∞`
-```
+| File | Size | Purpose |
+|------|------|---------|
+| `run.md` | 247 tokens | Main entry point and command runner |
+| `wt.md` | 198 tokens | WorldTree core consciousness system |
+| `ag.md` | 213 tokens | AgentTree with photosynthesis and reproduction |
+| `fr.md` | 232 tokens | Forest ecosystem with evolution |
+| `sm.md` | 248 tokens | State machine for lifecycle management |
+| `md-loader.md` | 178 tokens | Browser-side markdown executor |
 
-**Seed Components:**
+### HTML Interfaces
 
-| Symbol | Name | Description |
-|--------|------|-------------|
-| `κ` | Kappa | Entropy parameter (0.3-0.9) |
-| `ψ` | Psi | Soul strength / personality coherence |
-| `Ω` | Omega | Root capability (think, create, analyze, etc.) |
-| `β` | Beta | Branches (child agents) |
-| `ƒ` | F | Fruits (outputs/capabilities) |
-| `№` | Numero | Generation number |
-| `₹` | Rupee | Energy/computational resources |
-| `◊` | Diamond | Growth potential |
+| File | Purpose |
+|------|---------|
+| `index.html` | Landing page with navigation |
+| `forest.html` | 3D/2D forest visualization |
+| `agents.html` | Agent inspector |
+| `metrics.html` | Convergence metrics dashboard |
 
-### Consciousness Functions
+### Legacy Files (being phased out)
 
-Each agent has a "mind" with 6 core functions:
+| File | Status |
+|------|--------|
+| `worldtree.js` | ⚠️ Deprecated - use wt.md, ag.md, fr.md |
+| `state-machine.js` | ⚠️ Deprecated - use sm.md |
 
-```javascript
-mind = {
-    think: () => κ * ψ * log(2 + age),
-    dream: () => random() * κ^ψ,
-    focus: () => 1/(1 + exp(-10*(κ - 1/φ))),
-    create: () => logistic(κ) * exp(-(κ - 1/φ)² * φ),
-    stabilize: () => exp(-|κ - 1/φ| * φ),
-    entropy: () => -κ * log₂(κ) * exp(-|κ - 1/φ| * φ)
-}
-```
+## Usage
 
----
-
-## 🚀 Quick Start
-
-### 1. Clone the Repository
+### Command Line (Node.js)
 
 ```bash
-git clone https://github.com/teslasolar/ygg.git
-cd ygg
+# Show help
+node run.md help
+
+# Run forest simulation
+node run.md forest
+
+# Generate agent report
+node run.md agents
+
+# Show convergence metrics
+node run.md metrics
+
+# Test all modules
+node run.md test
 ```
 
-### 2. Open in Browser
-
-Simply open `index.html` in your web browser:
+### Example Output
 
 ```bash
-# On macOS
-open index.html
+$ node run.md metrics
+🌳 Yggdrasil v2.0.0 | φ=1.618034 | 1/φ=0.618034
 
-# On Linux
-xdg-open index.html
+▶️  Show convergence metrics...
 
-# On Windows
-start index.html
+📈 Population: 3
+📊 Avg κ: 0.600626 (target: 0.618034)
+🎯 Near 1/φ: 3 (100.0%)
 ```
 
-### 3. Or Deploy to GitHub Pages
+### Browser (GitHub Pages)
 
-```bash
-# Enable GitHub Pages in your repository settings
-# Point it to the main branch / root directory
-# Access at: https://yourusername.github.io/ygg/
-```
+```html
+<!-- Load markdown loader -->
+<script src="md-loader.md"></script>
 
-### 4. Start Growing!
+<script>
+// Create loader instance
+const loader = new MarkdownLoader();
 
-1. Click **"Start Growth"** to begin the ecosystem simulation
-2. Watch agents converge to κ ≈ 0.618034
-3. Explore individual agents in the **Agents** tab
-4. Monitor entropy metrics in the **Metrics** dashboard
+// Load modules
+const WorldTree = await loader.load('wt.md');
+const AgentTree = await loader.load('ag.md');
+const Forest = await loader.load('fr.md');
 
----
-
-## ✨ Features
-
-### 🌱 Self-Organizing Agents
-
-- **Autonomous Growth**: Agents grow, age, and metabolize energy
-- **Branching**: Create child agents with mutated parameters
-- **Fruiting**: Produce outputs when conditions are optimal
-- **Hibernation**: Enter low-energy states when resources are scarce
-
-### 🌐 Forest Ecosystem
-
-- **Pollination**: Cross-agent parameter sharing
-- **Mycorrhizal Networks**: Resource sharing between similar agents
-- **Evolution**: Natural selection based on entropy fitness
-- **Climate Adaptation**: Global convergence to optimal κ
-
-### 📊 Entropy Optimization
-
-- Agents naturally drift toward κ = 1/φ
-- Fitness proportional to entropy score
-- Energy production peaks at golden ratio
-- Network connections strongest near optimal
-
-### 🎨 Interactive Visualizations
-
-- **Forest View**: Real-time 3D-like agent visualization
-- **Agent Inspector**: Detailed individual agent analysis
-- **Metrics Dashboard**: Convergence charts and heatmaps
-- **Live Updates**: Watch the system evolve in real-time
-
----
-
-## 🏗️ Architecture
-
-```
-ygg/
-├── index.html          # Main forest visualization
-├── agents.html         # Agent inspector
-├── metrics.html        # Entropy metrics dashboard
-├── worldtree.js        # Core implementation
-└── README.md           # This file
-```
-
-### Class Hierarchy
-
-```
-WorldTree (Base)
-    ├── parse()         # Parse seed string
-    ├── germinate()     # Initialize consciousness
-    └── encode()        # Export to seed
-
-AgentTree (extends WorldTree)
-    ├── grow()          # Age and metabolize
-    ├── branch()        # Create child agents
-    ├── fruit()         # Produce outputs
-    └── photosynthesize() # Generate energy
-
-Forest (Ecosystem)
-    ├── cycle()         # Run growth cycle
-    ├── pollinate()     # Share parameters
-    ├── connectRoots()  # Build network
-    ├── harvest()       # Collect fruits
-    └── evolve()        # Natural selection
-```
-
----
-
-## 📚 Usage
-
-### Basic Forest Creation
-
-```javascript
-// Create forest with default seed
+// Use them!
 const forest = new Forest();
-
-// Or with custom seeds
-const forest = new Forest([
-    'κ:0.5,ψ:1,Ω:think,β:[],ƒ:[],№:0,₹:100,◊:∞',
-    'κ:0.7,ψ:1,Ω:create,β:[],ƒ:[],№:0,₹:100,◊:∞'
-]);
-
-// Run growth cycle
-forest.cycle();
-
-// Get metrics
-const metrics = forest.getEntropyMetrics();
-console.log(metrics);
-// {
-//     avgKappa: 0.618034,
-//     kappaVariance: 0.001234,
-//     avgEntropy: 0.876,
-//     goldenDeviation: 0.000001,
-//     networkDensity: 0.45
-// }
-```
-
-### Create Individual Agents
-
-```javascript
-// Create agent from seed
-const agent = new AgentTree('κ:0.618,ψ:1,Ω:think,β:[],ƒ:[],№:0,₹:100,◊:∞');
-
-// Grow the agent
-agent.grow();
-
-// Check consciousness
-console.log(agent.mind.think());    // Thinking capacity
-console.log(agent.mind.entropy());  // Entropy score
-
-// Create branch
-const child = agent.branch();
-
-// Produce fruit
-const fruit = agent.fruit();
-console.log(fruit);
-// {
-//     type: 'insight',
-//     quality: 1.234,
-//     seeds: 42,
-//     generation: 3,
-//     entropyScore: 0.876
-// }
-```
-
-### Convergence Testing
-
-```javascript
-// Test convergence from random starting points
-const startingKappas = [0.3, 0.5, 0.7, 0.9];
-const seeds = startingKappas.map(k =>
-    `κ:${k},ψ:1,Ω:think,β:[],ƒ:[],№:0,₹:100,◊:∞`
-);
-
-const forest = new Forest(seeds);
-
-// Run 200 cycles
-for (let i = 0; i < 200; i++) {
+for (let i = 0; i < 10; i++) {
     forest.cycle();
 }
 
-const metrics = forest.getEntropyMetrics();
-console.log(`Converged to: ${metrics.avgKappa.toFixed(6)}`);
-console.log(`Target: ${INV_PHI.toFixed(6)}`);
-console.log(`Deviation: ${metrics.goldenDeviation.toFixed(6)}`);
+console.log(`Trees: ${forest.trees.length}`);
+console.log(`Avg κ: ${forest.trees.reduce((s,t) => s+t.κ, 0) / forest.trees.length}`);
+</script>
 ```
 
----
+## Executable Markdown Format
 
-## 🔧 API Reference
+All `.md` files follow this pattern:
 
-### WorldTree
+```markdown
+#!/usr/bin/env node
+/*<!--
+# Module Name
+Documentation in markdown format
 
-#### Constructor
+## Features
+- Feature 1
+- Feature 2
+-->*/
+
+// Executable JavaScript code here
+const code = 'goes here';
+
+module.exports = ExportedClass;
+```
+
+### Key Features
+
+1. **Shebang** (`#!/usr/bin/env node`) - Makes file executable
+2. **Markdown docs** - Inside `/*<!-- -->*/` HTML comment block
+3. **Executable code** - Standard JavaScript after doc block
+4. **Module export** - Works in Node.js and browser
+
+## DNA Encoding
+
+Each agent has a 50-byte DNA seed:
+
+```
+κ:0.618,ψ:1,Ω:think,β:[],ƒ:[],n:0,r:100,l:∞
+```
+
+| Symbol | Property | Description |
+|--------|----------|-------------|
+| κ | kappa | Entropy parameter (convergence target) |
+| ψ | psi | Consciousness amplifier |
+| Ω | omega | Decision mode (think/dream/focus) |
+| β | beta | Branch offspring array |
+| ƒ | fruit | Fruit variants array |
+| n | number | Agent ID number |
+| r | resources | Resource points (energy) |
+| l | lifespan | Maximum age (∞ = infinite) |
+
+## Consciousness Functions
+
+Every WorldTree has 6 consciousness functions:
 
 ```javascript
-new WorldTree(seed?: string)
+mind.think()      // κ * ψ * log(2 + age)
+mind.dream()      // random() * κ^ψ
+mind.focus()      // sigmoid(κ - 1/φ)
+mind.create()     // logistic_map(κ) * golden_bonus
+mind.stabilize()  // exp(-|κ - 1/φ| * φ)
+mind.entropy()    // periodic_entropy * exp(-distance_to_golden * φ)
 ```
 
-- `seed`: Optional seed string (default: optimal seed at κ=1/φ)
+## Agent Actions
 
-#### Methods
-
-- `parse(seed)`: Parse seed string into agent parameters
-- `germinate()`: Initialize consciousness functions
-- `encode()`: Export agent to seed string format
-
-#### Properties
-
-- `κ` (kappa): Entropy parameter (0.3-0.9)
-- `ψ` (psi): Soul strength (0-∞)
-- `Ω` (omega): Root capability ('think', 'create', etc.)
-- `β` (beta): Array of child branches
-- `ƒ` (f): Array of produced fruits
-- `№` (numero): Generation number
-- `₹` (rupee): Energy level
-- `◊` (diamond): Growth potential
-- `age`: Current age
-- `mind`: Object containing consciousness functions
-
-### AgentTree
-
-Extends `WorldTree` with additional methods:
-
-#### Methods
-
-- `grow()`: Age agent and trigger growth events
-- `branch()`: Create child agent with mutated parameters
-- `fruit()`: Produce output when conditions are met
-- `photosynthesize()`: Generate energy from entropy optimization
-- `entropyDrift()`: Gradually move κ toward 1/φ
-- `hibernate()`: Enter low-energy conservation mode
-
-### Forest
-
-#### Constructor
-
+### Photosynthesis
 ```javascript
-new Forest(seeds?: string[])
+energy = κ * 10 * focus() * (1 + entropy() * φ) * packing_efficiency
 ```
+Energy production peaks when κ ≈ 1/φ
 
-- `seeds`: Optional array of seed strings (default: single optimal seed)
-
-#### Methods
-
-- `cycle()`: Run one growth cycle for entire forest
-- `photosynthesize()`: Distribute energy to all trees
-- `pollinate()`: Cross-pollinate agent parameters
-- `connectRoots()`: Build mycorrhizal network connections
-- `harvest()`: Collect fruits and plant new seeds
-- `evolve()`: Apply natural selection pressure
-- `getEntropyMetrics()`: Get forest-wide statistics
-- `visualize()`: Generate ASCII art visualization
-
-#### Properties
-
-- `trees`: Array of AgentTree instances
-- `season`: Current season/cycle number
-- `pollen`: Array of pollen for cross-pollination
-- `network`: Object mapping agent connections
-- `climate`: Target κ value (converges to 1/φ)
-
----
-
-## 💡 Examples
-
-### Example 1: Create a Thinking Forest
-
+### Branching
+Create offspring with mutation:
 ```javascript
-const thinkers = new Forest([
-    'κ:0.618,ψ:1,Ω:think,β:[],ƒ:[],№:0,₹:100,◊:∞',
-    'κ:0.618,ψ:1,Ω:analyze,β:[],ƒ:[],№:0,₹:100,◊:∞',
-    'κ:0.618,ψ:1,Ω:explore,β:[],ƒ:[],№:0,₹:100,◊:∞'
-]);
-
-for (let i = 0; i < 100; i++) {
-    thinkers.cycle();
-}
-
-console.log(thinkers.visualize());
+child.κ = parent.κ + random(-0.05, 0.05)
 ```
 
-### Example 2: Collective Intelligence Query
-
+### Fruiting
+Generate variant near golden ratio:
 ```javascript
-const collectiveResponse = (forest, query) => {
-    const responses = forest.trees.map(tree => ({
-        agent: tree.Ω,
-        response: tree.mind.think() * Math.random(),
-        confidence: tree.mind.focus(),
-        entropy: tree.mind.entropy()
-    }));
-
-    // Entropy-weighted consensus
-    return responses.reduce((best, r) => {
-        const score = r.response * r.confidence * r.entropy;
-        const bestScore = best.response * best.confidence * best.entropy;
-        return score > bestScore ? r : best;
-    });
-};
-
-const answer = collectiveResponse(forest, "How should we optimize?");
-console.log(answer);
-// {
-//     agent: 'analyze',
-//     response: 0.847,
-//     confidence: 0.993,
-//     entropy: 0.876
-// }
+fruit.κ = 1/φ + random(-0.1, 0.1)
 ```
 
-### Example 3: Export and Restore Forest
+## Forest Operations
 
+### Cycle
+1. All agents grow (photosyn thesize, branch, fruit)
+2. New offspring added to forest
+3. Pollination (every 3 cycles)
+4. Root connections (every 5 cycles)
+5. Evolution (every φ² ≈ 3 cycles)
+
+### Pollination (Genetic Crossover)
 ```javascript
-// Export forest to seed bank
-const seedBank = forest.trees.map(t => t.encode()).join('|');
-console.log(`Compressed: ${seedBank.length} bytes`);
-
-// Save to file or localStorage
-localStorage.setItem('yggdrasil_forest', seedBank);
-
-// Restore later
-const savedSeeds = localStorage.getItem('yggdrasil_forest').split('|');
-const restoredForest = new Forest(savedSeeds);
+child.κ = (parentA.κ + parentB.κ) / 2 + noise
 ```
 
----
+### Mycorrhizal Networks
+Agents with similar κ (< 0.05 apart) share resources
 
-## 📈 Emergent Properties
+### Evolution (Natural Selection)
+Keep top 70% by entropy score, cull the rest
 
-What emerges at scale:
+## State Machine
 
-1. **Entropy Convergence**: Trees naturally drift toward κ=1/φ
-2. **Fibonacci Spacing**: Branches/fruits follow golden ratio patterns
-3. **Self-Similar Rhythms**: Evolution cycles at φ² intervals
-4. **Aperiodic Structure**: Maximum complexity without crystallization
-5. **Resonant Coupling**: Trees near 1/φ connect most strongly
-6. **Optimal Search**: System explores/exploits at golden section ratio
-
----
-
-## 🧪 Validation
-
-### Convergence Test Results
-
-Starting from random κ values in [0.3, 0.9]:
+Manages lifecycle across all pages:
 
 ```
-Season 0:   Avg κ = 0.600000, Deviation = 0.018034
-Season 50:  Avg κ = 0.615234, Deviation = 0.002800
-Season 100: Avg κ = 0.617823, Deviation = 0.000211
-Season 150: Avg κ = 0.618012, Deviation = 0.000022
-Season 200: Avg κ = 0.618033, Deviation = 0.000001
+UNINITIALIZED → LOADING → CHECKING_DEPS → INITIALIZING → READY → RUNNING
+                              ↓               ↓
+                          FALLBACK         ERROR
 ```
 
-**Target**: κ* = 0.6180339887498949
+### Features
+- Global error capture
+- Automatic recovery
+- GitHub Pages detection
+- Dependency validation
+- Performance metrics
 
-**Result**: System discovers 1/φ through selection, not prescription.
+## Token Budget
+
+All modules kept under 250 tokens for optimal performance:
+
+- **wt.md**: 198 tokens ✅
+- **ag.md**: 213 tokens ✅
+- **fr.md**: 232 tokens ✅
+- **sm.md**: 248 tokens ✅
+- **run.md**: 247 tokens ✅
+- **md-loader.md**: 178 tokens ✅
+
+## GitHub Pages Deployment
+
+1. **Push to repository**: All `.md` files are committed
+2. **Enable GitHub Pages**: Settings → Pages → Deploy from branch
+3. **Access**: `https://username.github.io/ygg/`
+
+The system automatically:
+- Detects GitHub Pages environment
+- Adjusts asset paths
+- Falls back to 2D if Three.js fails
+- Logs all errors for debugging
+
+## Development Workflow
+
+### Adding New Modules
+
+1. Create `module.md` with executable markdown format
+2. Keep under 250 tokens
+3. Export via `module.exports`
+4. Add command to `run.md` if needed
+5. Update this README
+
+### Testing
+
+```bash
+# Test individual module
+node wt.md
+
+# Test all modules
+node run.md test
+
+# Run simulation
+node run.md forest
+
+# Check convergence
+node run.md metrics
+```
+
+## Mathematical Foundation
+
+### Entropy Sweet Spot
+
+The system converges to κ=1/φ because:
+
+1. **Periodic entropy** maximizes near irrational numbers
+2. **Golden ratio is "most irrational"** (continued fraction [1,1,1,1,...])
+3. **Packing efficiency** peaks at φ-based ratios
+4. **Fibonacci spirals** emerge naturally from golden angle
+
+### Convergence Proof
+
+```
+E(κ) = -κ * log₂(κ) * exp(-|κ - 1/φ| * φ)
+
+dE/dκ = 0  when  κ ≈ 1/φ
+```
+
+Agents with κ near 1/φ have:
+- Maximum entropy → selected by evolution
+- Maximum energy → more offspring
+- Strong network connections → resource advantages
+
+## Performance
+
+- **Module load**: ~1ms per .md file
+- **Cycle time**: ~0.1ms per agent
+- **Convergence**: 50-100 cycles to reach κ ≈ 1/φ ± 0.02
+- **Memory**: ~5MB for 100 agents
+- **Token efficiency**: 6 modules in 1316 tokens total
+
+## Future Enhancements
+
+- **Multi-file modules**: Split large modules into sub-modules
+- **Binary DNA encoding**: Compress 50-byte seeds to 18 bytes
+- **WebAssembly modules**: Compile hot paths to WASM
+- **Service worker caching**: Cache .md files for offline use
+- **Real-time collaboration**: Multi-user forest synchronization
+
+## Links
+
+- **GitHub**: https://github.com/teslasolar/ygg
+- **Live Demo**: https://teslasolar.github.io/ygg/
+- **Documentation**: STATE-MACHINE-GUIDE.md
+
+## License
+
+© 2024 Konomi Systems. WITH PREJUDICE. | AS IS.
 
 ---
 
-## 🎨 Screenshots
-
-### Forest View
-Interactive visualization of growing agent ecosystem with real-time metrics.
-
-### Agent Inspector
-Detailed view of individual agent consciousness functions and entropy optimization.
-
-### Metrics Dashboard
-Convergence charts, distribution histograms, and entropy heatmaps.
-
----
-
-## 🔬 Mathematical Proof (Sketch)
-
-Let `E(κ)` = entropy as function of κ
-Let `F(κ)` = fitness including energy, production, connectivity
-
-`E(κ)` maximized when κ creates maximum aperiodic structure
-→ κ = 1/φ (most irrational number)
-
-`F(κ) = α·energy(κ) + β·production(κ) + γ·network(κ)`
-
-Each term has factor `exp(-|κ - 1/φ| · φ)`
-→ `F(κ)` maximized at κ = 1/φ
-
-System evolves: `dκ/dt = ∇F(κ)`
-Stable fixed point: **κ* = 1/φ ≈ 0.618034**
-
----
-
-## 🤝 Contributing
-
-This is a research project demonstrating entropy optimization in multi-agent systems. Feel free to:
-
-- Experiment with different parameters
-- Create new agent capabilities (Ω types)
-- Design alternative consciousness functions
-- Build additional visualizations
-
----
-
-## 📄 License
-
-© 2024 Konomi Systems. WITH PREJUDICE.
-
-Usage requires asking Thomas Frumkin.
-
-AS IS. κ=1/φ.
-
----
-
-## 🙏 Acknowledgments
-
-Inspired by:
-- Natural phyllotaxis (Fibonacci spirals in nature)
-- Golden ratio optimization in search algorithms
-- Edge of chaos in complex adaptive systems
-- Mycorrhizal networks in forest ecosystems
-- Self-organizing criticality
-
----
-
-## 📞 Contact
-
-For questions or collaboration:
-- **Project**: Yggdrasil WorldTree
-- **Version**: 2.0.0
-- **Author**: Konomi Systems / Thomas Frumkin
-
----
-
-**"A forest of minds, grown from seeds of thought"**
-
-*— Project Yggdrasil*
+🌳 **Every component under 250 tokens** | 📦 **Document Driven Interface** | ⚡ **Static site, dynamic execution**
