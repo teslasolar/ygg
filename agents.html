@@ -411,25 +411,49 @@
         </div>
     </div>
 
+    <script src="state-machine.js"></script>
     <script src="worldtree.js"></script>
     <script>
         class AgentViewer {
             constructor() {
+                this.sm = createStateMachine('AgentViewer');
                 this.forest = new Forest();
                 this.selectedAgentIndex = null;
                 this.sortKey = null;
 
-                this.init();
+                this.setupStateMachineHandlers();
             }
 
-            init() {
-                // Run some cycles to generate interesting agents
-                for (let i = 0; i < 20; i++) {
-                    this.forest.cycle();
+            setupStateMachineHandlers() {
+                this.sm.onState('READY', () => {
+                    this.sm.log('success', '🤖 Agent viewer ready!');
+                });
+
+                this.sm.onState('RUNNING', () => {
+                    this.sm.log('info', '▶️ Auto-update running');
+                });
+            }
+
+            async init() {
+                this.sm.log('info', '🚀 Initializing Agent Viewer...');
+
+                const success = await this.sm.initialize(async () => {
+                    // Run some cycles to generate interesting agents
+                    this.sm.log('info', 'Generating initial agents...');
+                    for (let i = 0; i < 20; i++) {
+                        this.forest.cycle();
+                    }
+
+                    this.refresh();
+                    this.startAutoUpdate();
+                });
+
+                if (success) {
+                    this.sm.transition('RUNNING');
                 }
 
-                this.refresh();
-                this.startAutoUpdate();
+                this.sm.checkGitHubPagesCompatibility();
+                return success;
             }
 
             startAutoUpdate() {
@@ -715,8 +739,9 @@
 
         // Initialize
         let agentViewer;
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             agentViewer = new AgentViewer();
+            await agentViewer.init();
         });
     </script>
 </body>

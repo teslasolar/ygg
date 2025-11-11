@@ -438,23 +438,46 @@
         </div>
     </div>
 
+    <script src="state-machine.js"></script>
     <script src="worldtree.js"></script>
     <script>
         class MetricsDashboard {
             constructor() {
+                this.sm = createStateMachine('MetricsDashboard');
                 this.forest = new Forest();
                 this.historyLength = 100;
                 this.kappaHistory = [];
                 this.entropyHistory = [];
                 this.charts = {};
 
-                this.init();
+                this.setupStateMachineHandlers();
             }
 
-            init() {
-                this.setupCharts();
-                this.startUpdates();
-                this.runExperiment();
+            setupStateMachineHandlers() {
+                this.sm.onState('READY', () => {
+                    this.sm.log('success', '📊 Metrics dashboard ready!');
+                });
+
+                this.sm.onState('RUNNING', () => {
+                    this.sm.log('info', '▶️ Monitoring metrics');
+                });
+            }
+
+            async init() {
+                this.sm.log('info', '🚀 Initializing Metrics Dashboard...');
+
+                const success = await this.sm.initialize(async () => {
+                    this.setupCharts();
+                    this.startUpdates();
+                    this.runExperiment();
+                });
+
+                if (success) {
+                    this.sm.transition('RUNNING');
+                }
+
+                this.sm.checkGitHubPagesCompatibility();
+                return success;
             }
 
             setupCharts() {
@@ -780,8 +803,9 @@
 
         // Initialize
         let metrics;
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             metrics = new MetricsDashboard();
+            await metrics.init();
         });
     </script>
 </body>

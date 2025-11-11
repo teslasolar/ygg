@@ -358,6 +358,7 @@
         <button class="button danger" onclick="ygg.cullWeak()">☠️ Cull Weak</button>
     </div>
 
+    <script src="state-machine.js"></script>
     <script src="worldtree.js"></script>
     <script>
         const PHI = (1 + Math.sqrt(5)) / 2;
@@ -365,6 +366,9 @@
 
         class YggdrasilUI {
             constructor() {
+                // Create state machine for this page
+                this.sm = createStateMachine('Forest');
+
                 this.forest = new Forest();
                 this.scene = null;
                 this.camera = null;
@@ -389,15 +393,63 @@
                     },
                     current: 'grow'
                 };
+
+                // Set up state machine handlers
+                this.setupStateMachineHandlers();
+            }
+
+            setupStateMachineHandlers() {
+                // Handle state transitions
+                this.sm.onState('READY', () => {
+                    this.sm.log('success', '🌳 Forest ready to grow!');
+                });
+
+                this.sm.onState('ERROR', (data) => {
+                    this.sm.log('error', 'Forest encountered error:', data);
+                    // Attempt recovery
+                    if (data.error && data.error.message.includes('THREE')) {
+                        this.sm.log('info', 'Attempting 3D→2D fallback');
+                        this.sm.transition('FALLBACK');
+                    }
+                });
+
+                this.sm.onState('RUNNING', () => {
+                    this.sm.log('info', '▶️ Forest simulation running');
+                });
+
+                this.sm.onState('PAUSED', () => {
+                    this.sm.log('info', '⏸️ Forest simulation paused');
+                });
+
+                // Listen for Three.js errors
+                this.sm.on('three-error', () => {
+                    this.sm.log('warning', 'Three.js error detected, switching to 2D');
+                    if (this.renderer) {
+                        this.setup2DFallback(document.getElementById('canvas3d'));
+                    }
+                });
             }
 
             async init() {
-                console.log('🚀 Initializing Yggdrasil UI...');
-                await this.bootSequence();
-                this.setup3D();
-                await this.initialGrowth();
-                this.showUI();
-                this.startRenderLoop();
+                this.sm.log('info', '🚀 Initializing Yggdrasil Forest...');
+
+                // Use state machine for initialization
+                const success = await this.sm.initialize(async () => {
+                    await this.bootSequence();
+                    this.setup3D();
+                    await this.initialGrowth();
+                    this.showUI();
+                    this.startRenderLoop();
+                });
+
+                if (success) {
+                    this.sm.transition('RUNNING');
+                }
+
+                // Check GitHub Pages compatibility
+                this.sm.checkGitHubPagesCompatibility();
+
+                return success;
             }
 
             async bootSequence() {
@@ -701,7 +753,7 @@
             startGrowth() {
                 if (this.isGrowing) return;
                 this.isGrowing = true;
-                this.log('🌱 Continuous growth started', 'success');
+                this.sm.transition('RUNNING');
 
                 this.growthInterval = setInterval(() => {
                     this.runCycle();
@@ -712,7 +764,7 @@
                 if (!this.isGrowing) return;
                 this.isGrowing = false;
                 clearInterval(this.growthInterval);
-                this.log('⏸️ Growth paused', 'warning');
+                this.sm.transition('PAUSED');
             }
 
             setSpeed(value) {
@@ -974,20 +1026,8 @@
             }
 
             log(message, type = 'info') {
-                const console = document.getElementById('logConsole');
-                const timestamp = new Date().toLocaleTimeString().slice(-8);
-
-                const entry = document.createElement('div');
-                entry.className = `log-entry log-${type}`;
-                entry.textContent = `[${timestamp}] ${message}`;
-
-                console.appendChild(entry);
-                console.scrollTop = console.scrollHeight;
-
-                // Keep last 50 entries
-                while (console.children.length > 50) {
-                    console.removeChild(console.firstChild);
-                }
+                // Delegate to state machine
+                this.sm.log(type, message);
             }
         }
 
