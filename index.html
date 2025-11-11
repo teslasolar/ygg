@@ -400,7 +400,42 @@
         </div>
     </div>
 
+    <script src="state-machine.js"></script>
     <script>
+        // Create state machine for index page
+        const sm = createStateMachine('Index');
+
+        // Check if running on GitHub Pages
+        sm.log('info', `Running on: ${sm.isGitHubPages ? 'GitHub Pages' : 'Local Server'}`);
+        sm.log('info', `Protocol: ${window.location.protocol}`);
+        sm.log('info', `Hostname: ${window.location.hostname}`);
+
+        // Validate all page links
+        const links = ['forest.html', 'agents.html', 'metrics.html', 'worldtree.js', 'state-machine.js'];
+        sm.log('info', 'Checking page resources...');
+
+        links.forEach(link => {
+            fetch(link, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        sm.log('success', `✅ ${link} available`);
+                    } else {
+                        sm.log('warning', `⚠️ ${link} returned ${response.status}`);
+                    }
+                })
+                .catch(error => {
+                    sm.log('error', `❌ ${link} failed to load`, error.message);
+                });
+        });
+
+        // GitHub Pages compatibility check
+        const issues = sm.checkGitHubPagesCompatibility();
+        if (issues.length === 0) {
+            sm.log('success', '✅ All GitHub Pages compatibility checks passed!');
+        }
+
+        sm.transition('READY');
+
         // Animate feature items on scroll (for mobile)
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -423,12 +458,24 @@
             if (e.key === '1') location.href = 'forest.html';
             if (e.key === '2') location.href = 'agents.html';
             if (e.key === '3') location.href = 'metrics.html';
+
+            // Debug shortcuts
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                console.log('📊 State Machine Status:');
+                console.log(sm.getMetrics());
+                console.log('All State Machines:', window.YggStateMachines);
+            }
         });
 
         console.log('🌳 Project Yggdrasil v2.0.0');
         console.log('φ = ' + ((1 + Math.sqrt(5)) / 2));
         console.log('1/φ = ' + (1 / ((1 + Math.sqrt(5)) / 2)));
-        console.log('Press 1, 2, or 3 to navigate');
+        console.log('');
+        console.log('🎮 Keyboard Shortcuts:');
+        console.log('  1, 2, 3 - Navigate to pages');
+        console.log('  Ctrl+Shift+E - View errors');
+        console.log('  Ctrl+Shift+L - Export logs');
+        console.log('  Ctrl+Shift+D - Debug state');
     </script>
 </body>
 </html>
