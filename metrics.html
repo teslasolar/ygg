@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Yggdrasil - Entropy Metrics Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            background: linear-gradient(135deg, #2d1b4e 0%, #1a1a3e 50%, #0f0f2e 100%);
+            color: #cc88ff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid #aa66ff;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(170, 102, 255, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #aa66ff, #cc88ff, #aa66ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-shift 3s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            padding: 8px 20px;
+            background: rgba(170, 102, 255, 0.1);
+            border: 2px solid #aa66ff;
+            border-radius: 20px;
+            color: #cc88ff;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .nav-link:hover {
+            background: rgba(170, 102, 255, 0.3);
+            box-shadow: 0 0 20px rgba(170, 102, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: rgba(0, 20, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(170, 102, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s;
+        }
+
+        .metric-card:hover {
+            border-color: #aa66ff;
+            box-shadow: 0 6px 30px rgba(170, 102, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .metric-title {
+            font-size: 0.9em;
+            color: #aa66ff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-value {
+            font-size: 3em;
+            font-weight: bold;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 10px;
+        }
+
+        .metric-subtitle {
+            font-size: 0.85em;
+            color: #888;
+        }
+
+        .chart-container {
+            background: rgba(0, 20, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(170, 102, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 1.3em;
+            color: #aa66ff;
+            margin-bottom: 15px;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .golden-ratio-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .golden-ratio-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .convergence-viz {
+            position: relative;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .phi-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: #ffaa00;
+            top: 38.2%;
+            opacity: 0.5;
+        }
+
+        .phi-label {
+            position: absolute;
+            right: 10px;
+            top: 38.2%;
+            transform: translateY(-50%);
+            color: #ffaa00;
+            font-size: 0.85em;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .distribution-viz {
+            display: flex;
+            align-items: flex-end;
+            height: 400px;
+            gap: 2px;
+            padding: 20px;
+        }
+
+        .distribution-bar {
+            flex: 1;
+            background: linear-gradient(0deg, #aa66ff, #cc88ff);
+            border-radius: 3px 3px 0 0;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .distribution-bar:hover {
+            background: linear-gradient(0deg, #cc88ff, #ffffff);
+            transform: scaleY(1.05);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #aa66ff, #8844cc);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .button:hover {
+            background: linear-gradient(135deg, #cc88ff, #aa66ff);
+            box-shadow: 0 4px 15px rgba(170, 102, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .math-proof {
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 4px solid #ffaa00;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(170, 102, 255, 0.2);
+        }
+
+        .data-table th {
+            background: rgba(170, 102, 255, 0.1);
+            color: #aa66ff;
+            font-weight: bold;
+        }
+
+        .data-table td {
+            color: #cc88ff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .data-table tr:hover {
+            background: rgba(170, 102, 255, 0.05);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-optimal {
+            background: #44ff44;
+            box-shadow: 0 0 10px #44ff44;
+        }
+
+        .status-converging {
+            background: #ffaa00;
+            box-shadow: 0 0 10px #ffaa00;
+        }
+
+        .status-diverging {
+            background: #ff4444;
+            box-shadow: 0 0 10px #ff4444;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .progress-ring {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+        }
+
+        .progress-ring circle {
+            transition: stroke-dashoffset 0.5s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(20, 1fr);
+            gap: 2px;
+            padding: 10px;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 ENTROPY METRICS DASHBOARD</h1>
+        <div class="nav">
+            <a href="index.html" class="nav-link">🌳 Forest</a>
+            <a href="agents.html" class="nav-link">🤖 Agents</a>
+            <a href="metrics.html" class="nav-link">📊 Metrics</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="controls">
+            <button class="button" onclick="metrics.runExperiment()">🔬 Run Experiment</button>
+            <button class="button" onclick="metrics.testConvergence()">📈 Test Convergence</button>
+            <button class="button" onclick="metrics.exportData()">💾 Export Data</button>
+            <button class="button" onclick="metrics.reset()">🔄 Reset</button>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="metric-card">
+                <div class="metric-title">Average Kappa</div>
+                <div class="metric-value" id="avgKappa">0.618</div>
+                <div class="metric-subtitle">Target: 0.618034 (1/φ)</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">Golden Deviation</div>
+                <div class="metric-value" id="deviation">0.000</div>
+                <div class="metric-subtitle">
+                    <span class="status-indicator status-optimal"></span>
+                    <span id="deviationStatus">Optimal</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">Average Entropy</div>
+                <div class="metric-value" id="avgEntropy">0.000</div>
+                <div class="metric-subtitle">Max at κ=1/φ</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">Forest Size</div>
+                <div class="metric-value" id="forestSize">0</div>
+                <div class="metric-subtitle">Active agents</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">Seasons Elapsed</div>
+                <div class="metric-value" id="seasons">0</div>
+                <div class="metric-subtitle">Growth cycles</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">Network Density</div>
+                <div class="metric-value" id="networkDensity">0%</div>
+                <div class="metric-subtitle">Root connections</div>
+            </div>
+        </div>
+
+        <div class="golden-ratio-section">
+            <div class="chart-container">
+                <div class="chart-title">📈 Kappa Convergence Over Time</div>
+                <div class="chart-canvas">
+                    <canvas id="convergenceChart"></canvas>
+                </div>
+                <div class="math-proof">
+                    System evolves: dκ/dt = ∇F(κ)<br>
+                    Stable fixed point: κ* = 1/φ ≈ 0.618034<br>
+                    F(κ) maximized when κ creates maximum aperiodic structure
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">📊 Kappa Distribution</div>
+                <div class="convergence-viz">
+                    <div class="phi-line"></div>
+                    <div class="phi-label">1/φ = 0.618034</div>
+                    <div class="distribution-viz" id="kappaDistribution"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">🔥 Agent Entropy Heatmap</div>
+            <div class="heatmap" id="entropyHeatmap"></div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">📋 Detailed Agent Statistics</div>
+            <table class="data-table" id="agentTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Type</th>
+                        <th>κ</th>
+                        <th>Δ from 1/φ</th>
+                        <th>Entropy</th>
+                        <th>Energy</th>
+                        <th>Age</th>
+                        <th>Gen</th>
+                    </tr>
+                </thead>
+                <tbody id="agentTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="worldtree.js"></script>
+    <script>
+        class MetricsDashboard {
+            constructor() {
+                this.forest = new Forest();
+                this.historyLength = 100;
+                this.kappaHistory = [];
+                this.entropyHistory = [];
+                this.charts = {};
+
+                this.init();
+            }
+
+            init() {
+                this.setupCharts();
+                this.startUpdates();
+                this.runExperiment();
+            }
+
+            setupCharts() {
+                // Setup convergence chart
+                const canvas = document.getElementById('convergenceChart');
+                const ctx = canvas.getContext('2d');
+                this.charts.convergence = { canvas, ctx };
+            }
+
+            startUpdates() {
+                setInterval(() => {
+                    this.forest.cycle();
+                    this.updateMetrics();
+                    this.updateVisualizations();
+                }, 1000);
+            }
+
+            runExperiment() {
+                // Run 50 cycles quickly
+                for (let i = 0; i < 50; i++) {
+                    this.forest.cycle();
+                    const metrics = this.forest.getEntropyMetrics();
+                    this.kappaHistory.push(metrics.avgKappa);
+                    this.entropyHistory.push(metrics.avgEntropy);
+
+                    if (this.kappaHistory.length > this.historyLength) {
+                        this.kappaHistory.shift();
+                        this.entropyHistory.shift();
+                    }
+                }
+
+                this.updateMetrics();
+                this.updateVisualizations();
+            }
+
+            testConvergence() {
+                // Test with random starting conditions
+                const startingKappas = [0.3, 0.5, 0.7, 0.9];
+                const seeds = startingKappas.map(k =>
+                    `κ:${k},ψ:1,Ω:think,β:[],ƒ:[],№:0,₹:100,◊:∞`
+                );
+
+                this.forest = new Forest(seeds);
+                this.kappaHistory = [];
+                this.entropyHistory = [];
+
+                // Run convergence test
+                for (let i = 0; i < 200; i++) {
+                    this.forest.cycle();
+                    const metrics = this.forest.getEntropyMetrics();
+                    this.kappaHistory.push(metrics.avgKappa);
+                    this.entropyHistory.push(metrics.avgEntropy);
+                }
+
+                // Keep only recent history
+                this.kappaHistory = this.kappaHistory.slice(-this.historyLength);
+                this.entropyHistory = this.entropyHistory.slice(-this.historyLength);
+
+                this.updateMetrics();
+                this.updateVisualizations();
+
+                alert('Convergence test complete!\n' +
+                      `Started with κ ∈ [0.3, 0.9]\n` +
+                      `Converged to κ ≈ ${this.forest.getEntropyMetrics().avgKappa.toFixed(6)}\n` +
+                      `Target: ${INV_PHI.toFixed(6)}`);
+            }
+
+            exportData() {
+                const metrics = this.forest.getEntropyMetrics();
+                const data = {
+                    timestamp: new Date().toISOString(),
+                    forest: {
+                        size: this.forest.trees.length,
+                        season: this.forest.season,
+                        climate: this.forest.climate
+                    },
+                    metrics: metrics,
+                    agents: this.forest.trees.map(tree => ({
+                        type: tree.Ω,
+                        kappa: tree.κ,
+                        psi: tree.ψ,
+                        generation: tree.№,
+                        age: tree.age,
+                        energy: tree.₹,
+                        branches: tree.β.length,
+                        fruits: tree.ƒ.length,
+                        entropy: tree.mind.entropy()
+                    })),
+                    history: {
+                        kappa: this.kappaHistory,
+                        entropy: this.entropyHistory
+                    }
+                };
+
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `yggdrasil-metrics-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            reset() {
+                this.forest = new Forest();
+                this.kappaHistory = [];
+                this.entropyHistory = [];
+                this.updateMetrics();
+                this.updateVisualizations();
+            }
+
+            updateMetrics() {
+                const metrics = this.forest.getEntropyMetrics();
+
+                document.getElementById('avgKappa').textContent = metrics.avgKappa.toFixed(6);
+                document.getElementById('deviation').textContent = metrics.goldenDeviation.toFixed(6);
+                document.getElementById('avgEntropy').textContent = metrics.avgEntropy.toFixed(3);
+                document.getElementById('forestSize').textContent = this.forest.trees.length;
+                document.getElementById('seasons').textContent = this.forest.season;
+                document.getElementById('networkDensity').textContent =
+                    `${(metrics.networkDensity * 100).toFixed(1)}%`;
+
+                // Update status indicator
+                const statusEl = document.getElementById('deviationStatus');
+                const statusIndicator = document.querySelector('.status-indicator');
+
+                if (metrics.goldenDeviation < 0.01) {
+                    statusEl.textContent = 'Optimal';
+                    statusIndicator.className = 'status-indicator status-optimal';
+                } else if (metrics.goldenDeviation < 0.05) {
+                    statusEl.textContent = 'Converging';
+                    statusIndicator.className = 'status-indicator status-converging';
+                } else {
+                    statusEl.textContent = 'Diverging';
+                    statusIndicator.className = 'status-indicator status-diverging';
+                }
+
+                // Add current to history
+                this.kappaHistory.push(metrics.avgKappa);
+                this.entropyHistory.push(metrics.avgEntropy);
+
+                if (this.kappaHistory.length > this.historyLength) {
+                    this.kappaHistory.shift();
+                    this.entropyHistory.shift();
+                }
+            }
+
+            updateVisualizations() {
+                this.drawConvergenceChart();
+                this.drawKappaDistribution();
+                this.drawEntropyHeatmap();
+                this.updateAgentTable();
+            }
+
+            drawConvergenceChart() {
+                const { canvas, ctx } = this.charts.convergence;
+                const width = canvas.width = canvas.offsetWidth;
+                const height = canvas.height = canvas.offsetHeight;
+
+                ctx.clearRect(0, 0, width, height);
+
+                if (this.kappaHistory.length < 2) return;
+
+                // Draw grid
+                ctx.strokeStyle = 'rgba(170, 102, 255, 0.1)';
+                ctx.lineWidth = 1;
+
+                for (let i = 0; i <= 10; i++) {
+                    const y = (height / 10) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                    ctx.stroke();
+                }
+
+                // Draw 1/φ target line
+                const phiY = height * (1 - INV_PHI);
+                ctx.strokeStyle = '#ffaa00';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(0, phiY);
+                ctx.lineTo(width, phiY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Draw kappa line
+                ctx.strokeStyle = '#aa66ff';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+
+                this.kappaHistory.forEach((kappa, index) => {
+                    const x = (width / (this.kappaHistory.length - 1)) * index;
+                    const y = height * (1 - kappa);
+
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+
+                ctx.stroke();
+
+                // Draw points
+                ctx.fillStyle = '#cc88ff';
+                this.kappaHistory.forEach((kappa, index) => {
+                    if (index % 5 === 0) {
+                        const x = (width / (this.kappaHistory.length - 1)) * index;
+                        const y = height * (1 - kappa);
+                        ctx.beginPath();
+                        ctx.arc(x, y, 3, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+
+                // Draw labels
+                ctx.fillStyle = '#ffaa00';
+                ctx.font = '12px Courier New';
+                ctx.fillText(`1/φ = ${INV_PHI.toFixed(4)}`, 10, phiY - 5);
+
+                ctx.fillStyle = '#aa66ff';
+                const lastKappa = this.kappaHistory[this.kappaHistory.length - 1];
+                const lastY = height * (1 - lastKappa);
+                ctx.fillText(`κ = ${lastKappa.toFixed(4)}`, width - 100, lastY + 15);
+            }
+
+            drawKappaDistribution() {
+                const container = document.getElementById('kappaDistribution');
+                container.innerHTML = '';
+
+                // Create histogram
+                const bins = 50;
+                const binCounts = new Array(bins).fill(0);
+
+                this.forest.trees.forEach(tree => {
+                    const binIndex = Math.floor(tree.κ * bins);
+                    if (binIndex >= 0 && binIndex < bins) {
+                        binCounts[binIndex]++;
+                    }
+                });
+
+                const maxCount = Math.max(...binCounts, 1);
+
+                binCounts.forEach((count, index) => {
+                    const bar = document.createElement('div');
+                    bar.className = 'distribution-bar';
+                    const height = (count / maxCount) * 100;
+                    bar.style.height = `${height}%`;
+
+                    const kappa = index / bins;
+                    const deviation = Math.abs(kappa - INV_PHI);
+
+                    // Color based on proximity to 1/φ
+                    if (deviation < 0.05) {
+                        bar.style.background = 'linear-gradient(0deg, #44ff44, #88ff88)';
+                    } else if (deviation < 0.1) {
+                        bar.style.background = 'linear-gradient(0deg, #ffaa00, #ffcc44)';
+                    }
+
+                    bar.title = `κ=${kappa.toFixed(3)}, count=${count}`;
+
+                    container.appendChild(bar);
+                });
+            }
+
+            drawEntropyHeatmap() {
+                const heatmap = document.getElementById('entropyHeatmap');
+                heatmap.innerHTML = '';
+
+                const cells = Math.min(400, this.forest.trees.length);
+
+                for (let i = 0; i < cells; i++) {
+                    const tree = this.forest.trees[i % this.forest.trees.length];
+                    if (!tree) continue;
+
+                    const cell = document.createElement('div');
+                    cell.className = 'heatmap-cell';
+
+                    const entropy = tree.mind.entropy();
+                    const hue = 270 + entropy * 60; // Purple to pink
+                    const lightness = 30 + entropy * 50;
+
+                    cell.style.background = `hsl(${hue}, 80%, ${lightness}%)`;
+                    cell.title = `Agent ${i}: ${tree.Ω}, H=${entropy.toFixed(3)}`;
+
+                    heatmap.appendChild(cell);
+                }
+            }
+
+            updateAgentTable() {
+                const tbody = document.getElementById('agentTableBody');
+                tbody.innerHTML = '';
+
+                // Show top 20 agents
+                const agents = this.forest.trees
+                    .map((tree, index) => ({ tree, index }))
+                    .slice(0, 20);
+
+                agents.forEach(({ tree, index }) => {
+                    const deviation = Math.abs(tree.κ - INV_PHI);
+                    const entropy = tree.mind.entropy();
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index}</td>
+                        <td>${tree.Ω}</td>
+                        <td>${tree.κ.toFixed(6)}</td>
+                        <td style="color: ${deviation < 0.01 ? '#44ff44' : deviation < 0.05 ? '#ffaa00' : '#ff4444'}">
+                            ${deviation.toFixed(6)}
+                        </td>
+                        <td>${entropy.toFixed(3)}</td>
+                        <td>${tree.₹.toFixed(1)}</td>
+                        <td>${tree.age}</td>
+                        <td>${tree.№}</td>
+                    `;
+
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        // Initialize
+        let metrics;
+        window.addEventListener('load', () => {
+            metrics = new MetricsDashboard();
+        });
+    </script>
+</body>
+</html>
