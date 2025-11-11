@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌳 Project Yggdrasil - WorldTree Forest Ecosystem</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            background: #0a1f0a;
+            color: #88ff88;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .boot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .boot-logo {
+            font-size: 64px;
+            margin: 20px;
+            text-shadow: 0 0 30px #44ff44;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        .boot-status {
+            font-size: 14px;
+            margin: 5px;
+            color: #44ff44;
+        }
+
+        .boot-progress {
+            width: 400px;
+            height: 6px;
+            background: #003;
+            margin: 20px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .boot-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #44ff44, #88ff88);
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid #44ff44;
+            padding: 15px 20px;
+            box-shadow: 0 4px 20px rgba(68, 255, 68, 0.3);
+            z-index: 100;
+            display: none;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+            background: linear-gradient(45deg, #44ff44, #88ff88, #44ff44);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-shift 3s ease infinite;
+            margin-bottom: 5px;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #66cc66;
+            font-size: 0.9em;
+        }
+
+        .hud {
+            position: fixed;
+            background: rgba(0, 20, 0, 0.95);
+            border: 2px solid #44ff44;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 90;
+            display: none;
+        }
+
+        .hud-tl { top: 90px; left: 10px; max-width: 250px; }
+        .hud-tr { top: 90px; right: 10px; max-width: 280px; }
+        .hud-bl { bottom: 10px; left: 10px; max-width: 300px; }
+        .hud-br { bottom: 10px; right: 10px; max-width: 300px; }
+
+        .hud-title {
+            color: #44ff44;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 11px;
+        }
+
+        .phi-display {
+            font-size: 20px;
+            color: #ffff00;
+            text-align: center;
+            text-shadow: 0 0 10px #ffff00;
+            margin: 8px 0;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+            margin: 3px 0;
+            border-bottom: 1px solid rgba(68, 255, 68, 0.2);
+        }
+
+        .metric-value {
+            color: #ffff88;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .button {
+            width: 100%;
+            background: linear-gradient(135deg, #44ff44, #22cc22);
+            border: none;
+            border-radius: 6px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 8px;
+            margin: 3px 0;
+            font-size: 10px;
+            transition: all 0.3s;
+        }
+
+        .button:hover {
+            background: linear-gradient(135deg, #66ff66, #44ee44);
+            box-shadow: 0 4px 15px rgba(68, 255, 68, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .button.secondary {
+            background: linear-gradient(135deg, #ffaa00, #ff8800);
+        }
+
+        .button.secondary:hover {
+            background: linear-gradient(135deg, #ffcc44, #ffaa00);
+        }
+
+        .button.danger {
+            background: linear-gradient(135deg, #ff4444, #cc2222);
+        }
+
+        .button.danger:hover {
+            background: linear-gradient(135deg, #ff6666, #ff4444);
+        }
+
+        .log-console {
+            background: #000;
+            border: 1px solid #44ff44;
+            border-radius: 8px;
+            padding: 10px;
+            height: 180px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            margin-top: 8px;
+        }
+
+        .log-entry {
+            margin: 2px 0;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .log-info { color: #88ff88; }
+        .log-success { color: #44ff44; }
+        .log-warning { color: #ffaa00; }
+        .log-error { color: #ff4444; }
+        .log-phi { color: #ffff88; }
+
+        .stat-mini {
+            display: inline-block;
+            background: rgba(68, 255, 68, 0.1);
+            padding: 3px 8px;
+            border-radius: 5px;
+            margin: 2px;
+            font-size: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(68, 255, 68, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 3px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #44ff44, #ffaa00);
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="boot" id="boot">
+        <div class="boot-logo">🌳 YGGDRASIL</div>
+        <div class="boot-status" id="bootStatus">Initializing WorldTree DNA...</div>
+        <div class="boot-progress"><div class="boot-bar" id="bootBar"></div></div>
+        <div style="font-size: 10px; color: #66cc66; margin-top: 20px;" id="bootDetails">
+            κ = 1/φ ≈ 0.6180339887498949 | Entropy Optimum
+        </div>
+    </div>
+
+    <canvas id="canvas3d"></canvas>
+
+    <div class="header" id="header">
+        <h1>🌳 PROJECT YGGDRASIL 🌳</h1>
+        <div class="subtitle">Agentic WorldTree Forest • κ=1/φ Convergence</div>
+    </div>
+
+    <!-- Top Left HUD: Controls -->
+    <div class="hud hud-tl" id="hudControls">
+        <div class="hud-title">🎛️ FOREST CONTROLS</div>
+        <div class="phi-display">φ⁻¹ ≈ 0.618</div>
+
+        <button class="button" onclick="ygg.startGrowth()">🌱 Start Growth</button>
+        <button class="button" onclick="ygg.pauseGrowth()">⏸️ Pause</button>
+        <button class="button secondary" onclick="ygg.runCycle()">⏩ Fast Cycle</button>
+        <button class="button secondary" onclick="ygg.agentDecide()">💭 Agent Decide</button>
+        <button class="button secondary" onclick="ygg.evolve()">🧬 Evolve</button>
+        <button class="button danger" onclick="ygg.resetForest()">🔄 Reset</button>
+
+        <div class="metric">
+            <span>Speed:</span>
+            <span class="metric-value" id="speedValue">1x</span>
+        </div>
+        <input type="range" min="100" max="2000" value="1000"
+               oninput="ygg.setSpeed(this.value)"
+               style="width: 100%; margin: 5px 0;">
+    </div>
+
+    <!-- Top Right HUD: Stats -->
+    <div class="hud hud-tr" id="hudStats">
+        <div class="hud-title">📊 FOREST METRICS</div>
+
+        <div class="metric">
+            <span>Trees:</span>
+            <span class="metric-value" id="treeCount">0</span>
+        </div>
+        <div class="metric">
+            <span>Season:</span>
+            <span class="metric-value" id="seasonCount">0</span>
+        </div>
+        <div class="metric">
+            <span>Avg κ:</span>
+            <span class="metric-value" id="avgKappa">0.618</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="kappaProgress" style="width: 61.8%"></div>
+        </div>
+        <div class="metric">
+            <span>Deviation:</span>
+            <span class="metric-value" id="deviation">0.000</span>
+        </div>
+        <div class="metric">
+            <span>Entropy:</span>
+            <span class="metric-value" id="entropy">0.000</span>
+        </div>
+        <div class="metric">
+            <span>Fruits:</span>
+            <span class="metric-value" id="fruitCount">0</span>
+        </div>
+        <div class="metric">
+            <span>Network:</span>
+            <span class="metric-value" id="networkDensity">0%</span>
+        </div>
+    </div>
+
+    <!-- Bottom Left HUD: Agent Thoughts -->
+    <div class="hud hud-bl" id="hudLog">
+        <div class="hud-title">🧠 AGENT THOUGHTS</div>
+        <div class="log-console" id="logConsole">
+            <div class="log-entry log-success">🌳 Yggdrasil initializing...</div>
+        </div>
+    </div>
+
+    <!-- Bottom Right HUD: Genetics -->
+    <div class="hud hud-br" id="hudGenetics">
+        <div class="hud-title">🧬 EVOLUTIONARY STATS</div>
+
+        <div class="metric">
+            <span>Mutations:</span>
+            <span class="metric-value" id="mutations">0</span>
+        </div>
+        <div class="metric">
+            <span>Crossovers:</span>
+            <span class="metric-value" id="crossovers">0</span>
+        </div>
+        <div class="metric">
+            <span>Deaths:</span>
+            <span class="metric-value" id="deaths">0</span>
+        </div>
+        <div class="metric">
+            <span>Avg Fitness:</span>
+            <span class="metric-value" id="avgFitness">0.0</span>
+        </div>
+
+        <button class="button secondary" onclick="ygg.mutateRandom()">⚡ Mutate</button>
+        <button class="button secondary" onclick="ygg.breedBest()">👑 Breed Elite</button>
+        <button class="button danger" onclick="ygg.cullWeak()">☠️ Cull Weak</button>
+    </div>
+
+    <script src="worldtree.js"></script>
+    <script>
+        const PHI = (1 + Math.sqrt(5)) / 2;
+        const INV_PHI = 1 / PHI;
+
+        class YggdrasilUI {
+            constructor() {
+                this.forest = new Forest();
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.isGrowing = false;
+                this.growthInterval = null;
+                this.speed = 1000;
+                this.treeObjects = new Map();
+                this.agentObjects = [];
+                this.mutations = 0;
+                this.crossovers = 0;
+                this.deaths = 0;
+
+                // Markov chain for agent decisions
+                this.markov = {
+                    states: ['grow', 'pollinate', 'evolve', 'optimize'],
+                    transitions: {
+                        grow: { grow: 0.3, pollinate: 0.3, evolve: 0.2, optimize: 0.2 },
+                        pollinate: { grow: 0.2, pollinate: 0.3, evolve: 0.3, optimize: 0.2 },
+                        evolve: { grow: 0.3, pollinate: 0.2, evolve: 0.2, optimize: 0.3 },
+                        optimize: { grow: 0.2, pollinate: 0.3, evolve: 0.3, optimize: 0.2 }
+                    },
+                    current: 'grow'
+                };
+            }
+
+            async init() {
+                console.log('🚀 Initializing Yggdrasil UI...');
+                await this.bootSequence();
+                this.setup3D();
+                await this.initialGrowth();
+                this.showUI();
+                this.startRenderLoop();
+            }
+
+            async bootSequence() {
+                const steps = [
+                    'Loading WorldTree DNA (50 bytes)...',
+                    'Spawning initial agents...',
+                    'Calculating φ-optimal seeds...',
+                    'Initializing Markov decision chains...',
+                    'Growing primordial forest...',
+                    'Establishing mycorrhizal networks...',
+                    'Compiling 3D visualization...',
+                    'System ready!'
+                ];
+
+                let progress = 0;
+                for (let step of steps) {
+                    document.getElementById('bootStatus').textContent = step;
+                    progress += 100 / steps.length;
+                    document.getElementById('bootBar').style.width = progress + '%';
+                    await new Promise(r => setTimeout(r, 400));
+                }
+            }
+
+            setup3D() {
+                const canvas = document.getElementById('canvas3d');
+
+                if (typeof THREE === 'undefined') {
+                    this.log('⚠️ Three.js not loaded, using 2D fallback', 'warning');
+                    this.setup2DFallback(canvas);
+                    return;
+                }
+
+                try {
+                    this.scene = new THREE.Scene();
+                    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                    this.camera.position.set(0, 15, 30);
+
+                    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                    this.renderer.setPixelRatio(window.devicePixelRatio);
+                    this.renderer.setClearColor(0x0a1f0a, 1);
+
+                    // Lighting
+                    this.scene.add(new THREE.AmbientLight(0x404040, 0.5));
+
+                const light1 = new THREE.PointLight(0x44ff44, 1, 100);
+                light1.position.set(20, 30, 20);
+                this.scene.add(light1);
+
+                const light2 = new THREE.PointLight(0xffaa00, 0.8, 80);
+                light2.position.set(-20, 20, -20);
+                this.scene.add(light2);
+
+                // Ground grid
+                const grid = new THREE.GridHelper(100, 50, 0x44ff44, 0x1a3a1a);
+                grid.position.y = 0;
+                this.scene.add(grid);
+
+                // φ Ring
+                const ring = new THREE.Mesh(
+                    new THREE.TorusGeometry(INV_PHI * 20, 0.2, 16, 100),
+                    new THREE.MeshBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.3 })
+                );
+                ring.rotation.x = Math.PI / 2;
+                ring.position.y = 5;
+                this.scene.add(ring);
+
+                // DNA Helix
+                const helixPoints = [];
+                for (let i = 0; i < 100; i++) {
+                    const angle = i * 0.3;
+                    const y = i * 0.4;
+                    helixPoints.push(new THREE.Vector3(
+                        Math.cos(angle) * 5,
+                        y,
+                        Math.sin(angle) * 5
+                    ));
+                }
+                const helix = new THREE.Line(
+                    new THREE.BufferGeometry().setFromPoints(helixPoints),
+                    new THREE.LineBasicMaterial({ color: 0xffff00, opacity: 0.5, transparent: true })
+                );
+                helix.position.y = -20;
+                this.scene.add(helix);
+
+                // Resize handler
+                window.addEventListener('resize', () => {
+                    if (this.camera && this.renderer) {
+                        this.camera.aspect = window.innerWidth / window.innerHeight;
+                        this.camera.updateProjectionMatrix();
+                        this.renderer.setSize(window.innerWidth, window.innerHeight);
+                    }
+                });
+
+                    this.log('✅ 3D scene initialized', 'success');
+                } catch (error) {
+                    this.log('❌ 3D initialization failed: ' + error.message, 'error');
+                    this.setup2DFallback(canvas);
+                }
+            }
+
+            setup2DFallback(canvas) {
+                this.log('🎨 Using 2D canvas fallback', 'info');
+
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                const ctx = canvas.getContext('2d');
+
+                // 2D fallback rendering
+                this.start2DRenderLoop(ctx, canvas);
+            }
+
+            start2DRenderLoop(ctx, canvas) {
+                const animate = () => {
+                    requestAnimationFrame(animate);
+
+                    // Clear canvas
+                    ctx.fillStyle = '#0a1f0a';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    const time = Date.now() * 0.001;
+                    const centerX = canvas.width / 2;
+                    const centerY = canvas.height / 2;
+
+                    // Draw grid
+                    ctx.strokeStyle = 'rgba(68, 255, 68, 0.2)';
+                    ctx.lineWidth = 1;
+                    for (let i = -10; i <= 10; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(centerX + i * 40, 0);
+                        ctx.lineTo(centerX + i * 40, canvas.height);
+                        ctx.stroke();
+
+                        ctx.beginPath();
+                        ctx.moveTo(0, centerY + i * 40);
+                        ctx.lineTo(canvas.width, centerY + i * 40);
+                        ctx.stroke();
+                    }
+
+                    // Draw golden ratio circle
+                    ctx.strokeStyle = 'rgba(255, 255, 0, 0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, INV_PHI * 100, 0, Math.PI * 2);
+                    ctx.stroke();
+
+                    // Draw trees
+                    this.forest.trees.forEach((tree, index) => {
+                        const angle = index * 2.39996322972865332; // Golden angle
+                        const radius = Math.sqrt(index) * 30;
+                        const x = centerX + radius * Math.cos(angle + time * 0.1);
+                        const y = centerY + radius * Math.sin(angle + time * 0.1);
+
+                        // Tree trunk
+                        ctx.fillStyle = '#8B4513';
+                        ctx.fillRect(x - 3, y, 6, 20 + tree.age);
+
+                        // Foliage
+                        const kappaDeviation = Math.abs(tree.κ - INV_PHI);
+                        const hue = 120 - kappaDeviation * 200;
+                        ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
+                        ctx.beginPath();
+                        ctx.arc(x, y - 10, 8 + tree.ψ * 3, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        // Fruits
+                        ctx.fillStyle = '#ff4444';
+                        tree.ƒ.slice(-3).forEach((fruit, i) => {
+                            ctx.beginPath();
+                            ctx.arc(x + (i - 1) * 6, y - 5, 3, 0, Math.PI * 2);
+                            ctx.fill();
+                        });
+                    });
+
+                    // Draw info text
+                    ctx.fillStyle = '#88ff88';
+                    ctx.font = '14px monospace';
+                    ctx.fillText('2D Fallback Mode - Three.js not available', 10, 30);
+                    ctx.fillText(`Trees: ${this.forest.trees.length} | Season: ${this.forest.season}`, 10, 50);
+                };
+
+                animate();
+                this.log('🎬 2D render loop started', 'success');
+            }
+
+            async initialGrowth() {
+                // Run a few cycles to get started
+                for (let i = 0; i < 10; i++) {
+                    this.forest.cycle();
+                }
+
+                // Create 3D objects for trees
+                this.forest.trees.forEach((tree, index) => {
+                    this.createTreeObject(tree, index);
+                });
+
+                this.log(`🌱 Initial forest: ${this.forest.trees.length} trees`, 'success');
+            }
+
+            createTreeObject(tree, index) {
+                if (!this.scene) return;
+
+                const group = new THREE.Group();
+
+                // Tree trunk
+                const trunkHeight = 2 + tree.age * 0.1 + tree.№ * 0.5;
+                const trunk = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.2, 0.3, trunkHeight, 8),
+                    new THREE.MeshPhongMaterial({ color: 0x8B4513 })
+                );
+                trunk.position.y = trunkHeight / 2;
+                group.add(trunk);
+
+                // Foliage
+                const foliageSize = 1 + tree.ψ * 0.5;
+                const kappaDeviation = Math.abs(tree.κ - INV_PHI);
+                const hue = 120 - kappaDeviation * 200; // Green when optimal
+
+                const foliage = new THREE.Mesh(
+                    new THREE.SphereGeometry(foliageSize, 8, 8),
+                    new THREE.MeshPhongMaterial({
+                        color: new THREE.Color(`hsl(${hue}, 70%, 50%)`),
+                        wireframe: false
+                    })
+                );
+                foliage.position.y = trunkHeight + foliageSize * 0.5;
+                group.add(foliage);
+
+                // Fruits
+                tree.ƒ.slice(-5).forEach((fruit, i) => {
+                    const fruitMesh = new THREE.Mesh(
+                        new THREE.SphereGeometry(0.2, 6, 6),
+                        new THREE.MeshPhongMaterial({ color: 0xff4444 })
+                    );
+                    const angle = (i / 5) * Math.PI * 2;
+                    fruitMesh.position.set(
+                        Math.cos(angle) * foliageSize * 0.7,
+                        trunkHeight + foliageSize * 0.3,
+                        Math.sin(angle) * foliageSize * 0.7
+                    );
+                    group.add(fruitMesh);
+                });
+
+                // Position in Fibonacci spiral
+                const angle = index * 2.39996322972865332; // Golden angle
+                const radius = Math.sqrt(index) * 3;
+                group.position.set(
+                    radius * Math.cos(angle),
+                    0,
+                    radius * Math.sin(angle)
+                );
+
+                group.userData = { treeIndex: index, tree };
+                this.scene.add(group);
+                this.treeObjects.set(index, group);
+            }
+
+            updateTreeObject(index) {
+                if (!this.scene) return;
+
+                const tree = this.forest.trees[index];
+                if (!tree) return;
+
+                const group = this.treeObjects.get(index);
+                if (!group) {
+                    this.createTreeObject(tree, index);
+                    return;
+                }
+
+                // Update existing tree
+                group.userData.tree = tree;
+
+                // Update trunk height
+                const trunkHeight = 2 + tree.age * 0.1 + tree.№ * 0.5;
+                const trunk = group.children[0];
+                trunk.scale.y = trunkHeight / 2;
+                trunk.position.y = trunkHeight / 2;
+
+                // Update foliage color based on kappa
+                const foliage = group.children[1];
+                const kappaDeviation = Math.abs(tree.κ - INV_PHI);
+                const hue = 120 - kappaDeviation * 200;
+                foliage.material.color.setHSL(hue / 360, 0.7, 0.5);
+                foliage.position.y = trunkHeight + 1;
+            }
+
+            showUI() {
+                document.getElementById('boot').style.display = 'none';
+                document.getElementById('header').style.display = 'block';
+                ['hudControls', 'hudStats', 'hudLog', 'hudGenetics'].forEach(id => {
+                    document.getElementById(id).style.display = 'block';
+                });
+
+                this.log('🌳 Yggdrasil forest is alive!', 'success');
+                this.log('💡 κ=1/φ convergence active', 'phi');
+                this.log('✨ Commands: GROW, EVOLVE, MUTATE, BREED', 'info');
+
+                this.updateUI();
+            }
+
+            startGrowth() {
+                if (this.isGrowing) return;
+                this.isGrowing = true;
+                this.log('🌱 Continuous growth started', 'success');
+
+                this.growthInterval = setInterval(() => {
+                    this.runCycle();
+                }, this.speed);
+            }
+
+            pauseGrowth() {
+                if (!this.isGrowing) return;
+                this.isGrowing = false;
+                clearInterval(this.growthInterval);
+                this.log('⏸️ Growth paused', 'warning');
+            }
+
+            setSpeed(value) {
+                this.speed = 2100 - parseInt(value);
+                const speedMultiplier = (2000 / this.speed).toFixed(1);
+                document.getElementById('speedValue').textContent = speedMultiplier + 'x';
+
+                if (this.isGrowing) {
+                    this.pauseGrowth();
+                    this.startGrowth();
+                }
+            }
+
+            runCycle() {
+                this.forest.cycle();
+
+                // Update existing trees
+                this.forest.trees.forEach((tree, index) => {
+                    this.updateTreeObject(index);
+                });
+
+                // Create new trees if population grew
+                if (this.forest.trees.length > this.treeObjects.size) {
+                    for (let i = this.treeObjects.size; i < this.forest.trees.length; i++) {
+                        this.createTreeObject(this.forest.trees[i], i);
+                    }
+                }
+
+                this.updateUI();
+
+                if (this.forest.season % 10 === 0) {
+                    const metrics = this.forest.getEntropyMetrics();
+                    this.log(`📊 Season ${this.forest.season}: κ=${metrics.avgKappa.toFixed(4)}, H=${metrics.avgEntropy.toFixed(3)}`, 'phi');
+                }
+            }
+
+            agentDecide() {
+                // Markov chain decision
+                const state = this.markov.current;
+                const probs = this.markov.transitions[state];
+                const rand = Math.random();
+                let cumsum = 0;
+
+                for (let [next, prob] of Object.entries(probs)) {
+                    cumsum += prob;
+                    if (rand < cumsum) {
+                        this.markov.current = next;
+                        break;
+                    }
+                }
+
+                const actions = {
+                    grow: 'Running growth cycle...',
+                    pollinate: 'Cross-pollinating agents...',
+                    evolve: 'Applying natural selection...',
+                    optimize: 'Optimizing toward κ=1/φ...'
+                };
+
+                this.log(`💭 Agent decided: ${actions[this.markov.current]}`, 'info');
+
+                // Execute decision
+                switch (this.markov.current) {
+                    case 'grow':
+                        this.runCycle();
+                        break;
+                    case 'pollinate':
+                        this.forest.pollinate();
+                        this.log('🐝 Pollination complete', 'success');
+                        break;
+                    case 'evolve':
+                        this.evolve();
+                        break;
+                    case 'optimize':
+                        this.forest.trees.forEach(t => {
+                            const drift = (INV_PHI - t.κ) * 0.1;
+                            t.κ = Math.max(0.3, Math.min(0.9, t.κ + drift));
+                        });
+                        this.log('⚡ Optimized all trees toward φ⁻¹', 'success');
+                        break;
+                }
+
+                this.updateUI();
+            }
+
+            async evolve() {
+                this.log('🧬 Evolution cycle starting...', 'info');
+
+                // Tournament selection
+                const tournament = () => {
+                    const a = this.forest.trees[Math.floor(Math.random() * this.forest.trees.length)];
+                    const b = this.forest.trees[Math.floor(Math.random() * this.forest.trees.length)];
+                    const aFit = a.mind.entropy() * a.ƒ.length;
+                    const bFit = b.mind.entropy() * b.ƒ.length;
+                    return aFit > bFit ? a : b;
+                };
+
+                const parent1 = tournament();
+                const parent2 = tournament();
+
+                if (parent1 && parent2 && parent1 !== parent2) {
+                    // Crossover
+                    const childKappa = (parent1.κ + parent2.κ) / 2 + (Math.random() - 0.5) / PHI;
+                    const childSeed = `κ:${childKappa},ψ:${(parent1.ψ + parent2.ψ) / 2},Ω:${parent1.Ω},β:[],ƒ:[],№:0,₹:80,◊:∞`;
+
+                    this.forest.trees.push(new AgentTree(childSeed));
+                    this.crossovers++;
+
+                    this.log(`✨ Crossover: ${parent1.Ω} × ${parent2.Ω} → Child`, 'success');
+                }
+
+                // Mutation
+                this.forest.trees.forEach(tree => {
+                    if (Math.random() < 0.15) {
+                        tree.κ += (Math.random() - 0.5) / PHI / 2;
+                        tree.κ = Math.max(0.3, Math.min(0.9, tree.κ));
+                        this.mutations++;
+                    }
+                });
+
+                this.updateUI();
+            }
+
+            mutateRandom() {
+                const tree = this.forest.trees[Math.floor(Math.random() * this.forest.trees.length)];
+                if (!tree) return;
+
+                tree.κ += (Math.random() - 0.5) / PHI;
+                tree.κ = Math.max(0.3, Math.min(0.9, tree.κ));
+                this.mutations++;
+
+                this.log(`⚡ Mutated ${tree.Ω} agent: κ=${tree.κ.toFixed(4)}`, 'warning');
+                this.updateUI();
+            }
+
+            breedBest() {
+                const sorted = [...this.forest.trees].sort((a, b) => {
+                    const aFit = a.mind.entropy() * a.ƒ.length * a.₹;
+                    const bFit = b.mind.entropy() * b.ƒ.length * b.₹;
+                    return bFit - aFit;
+                });
+
+                if (sorted.length < 2) return;
+
+                const parent1 = sorted[0];
+                const parent2 = sorted[1];
+                const childKappa = (parent1.κ + parent2.κ) / 2;
+                const childSeed = `κ:${childKappa},ψ:${(parent1.ψ + parent2.ψ) / 2},Ω:${parent1.Ω},β:[],ƒ:[],№:0,₹:100,◊:∞`;
+
+                this.forest.trees.push(new AgentTree(childSeed));
+                this.crossovers++;
+
+                this.log(`👑 Elite breeding: Top 2 agents produced offspring`, 'success');
+                this.updateUI();
+            }
+
+            cullWeak() {
+                const metrics = this.forest.getEntropyMetrics();
+                const threshold = metrics.avgEntropy * 0.7;
+
+                const beforeCount = this.forest.trees.length;
+                this.forest.trees = this.forest.trees.filter(tree => {
+                    return tree.mind.entropy() >= threshold;
+                });
+
+                const culled = beforeCount - this.forest.trees.length;
+                this.deaths += culled;
+
+                // Remove culled tree objects from scene
+                for (let [index, obj] of this.treeObjects) {
+                    if (index >= this.forest.trees.length) {
+                        this.scene.remove(obj);
+                        this.treeObjects.delete(index);
+                    }
+                }
+
+                this.log(`☠️ Culled ${culled} weak trees (entropy < ${threshold.toFixed(3)})`, 'error');
+                this.updateUI();
+            }
+
+            resetForest() {
+                this.pauseGrowth();
+
+                // Clear 3D objects
+                this.treeObjects.forEach(obj => this.scene.remove(obj));
+                this.treeObjects.clear();
+
+                // Reset forest
+                this.forest = new Forest();
+                this.mutations = 0;
+                this.crossovers = 0;
+                this.deaths = 0;
+                this.markov.current = 'grow';
+
+                this.log('🔄 Forest reset to primordial state', 'warning');
+
+                // Regrow
+                setTimeout(() => {
+                    this.initialGrowth().then(() => {
+                        this.updateUI();
+                        this.log('✅ New forest established', 'success');
+                    });
+                }, 500);
+            }
+
+            updateUI() {
+                const metrics = this.forest.getEntropyMetrics();
+
+                document.getElementById('treeCount').textContent = this.forest.trees.length;
+                document.getElementById('seasonCount').textContent = this.forest.season;
+                document.getElementById('avgKappa').textContent = metrics.avgKappa.toFixed(6);
+                document.getElementById('deviation').textContent = metrics.goldenDeviation.toFixed(6);
+                document.getElementById('entropy').textContent = metrics.avgEntropy.toFixed(3);
+
+                const totalFruits = this.forest.trees.reduce((sum, t) => sum + t.ƒ.length, 0);
+                document.getElementById('fruitCount').textContent = totalFruits;
+
+                document.getElementById('networkDensity').textContent =
+                    `${(metrics.networkDensity * 100).toFixed(1)}%`;
+
+                document.getElementById('kappaProgress').style.width =
+                    `${Math.min(100, metrics.avgKappa * 100)}%`;
+
+                document.getElementById('mutations').textContent = this.mutations;
+                document.getElementById('crossovers').textContent = this.crossovers;
+                document.getElementById('deaths').textContent = this.deaths;
+
+                const avgFitness = this.forest.trees.reduce((sum, t) =>
+                    sum + t.mind.entropy() * t.ƒ.length, 0) / this.forest.trees.length || 0;
+                document.getElementById('avgFitness').textContent = avgFitness.toFixed(2);
+            }
+
+            startRenderLoop() {
+                const animate = () => {
+                    requestAnimationFrame(animate);
+
+                    if (!this.scene || !this.camera || !this.renderer) return;
+
+                    const time = Date.now() * 0.001;
+
+                    // Rotate camera slowly
+                    this.camera.position.x = Math.sin(time * 0.1) * 35;
+                    this.camera.position.z = Math.cos(time * 0.1) * 35;
+                    this.camera.lookAt(0, 5, 0);
+
+                    // Animate trees
+                    this.treeObjects.forEach((group, index) => {
+                        const swayAmount = 0.05;
+                        group.rotation.z = Math.sin(time + index) * swayAmount;
+
+                        // Bob up and down slightly
+                        group.position.y = Math.sin(time * 2 + index) * 0.1;
+                    });
+
+                    this.renderer.render(this.scene, this.camera);
+                };
+
+                animate();
+                this.log('🎬 Render loop started', 'success');
+            }
+
+            log(message, type = 'info') {
+                const console = document.getElementById('logConsole');
+                const timestamp = new Date().toLocaleTimeString().slice(-8);
+
+                const entry = document.createElement('div');
+                entry.className = `log-entry log-${type}`;
+                entry.textContent = `[${timestamp}] ${message}`;
+
+                console.appendChild(entry);
+                console.scrollTop = console.scrollHeight;
+
+                // Keep last 50 entries
+                while (console.children.length > 50) {
+                    console.removeChild(console.firstChild);
+                }
+            }
+        }
+
+        // Initialize when ready
+        let ygg;
+        window.addEventListener('load', () => {
+            ygg = new YggdrasilUI();
+            ygg.init();
+        });
+    </script>
+</body>
+</html>
